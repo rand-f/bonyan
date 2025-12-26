@@ -8,6 +8,7 @@ import com.example.bnyan.Repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,6 +25,7 @@ public class ProjectService {
     public void addProject(Integer customer_id,Project project) {
         Customer customer= customerRepository.getCustomerById(customer_id);
         project.setCustomer(customer);
+        project.setCreated_at(LocalDateTime.now());
         projectRepository.save(project);
     }
 
@@ -48,6 +50,4 @@ public class ProjectService {
         }
         projectRepository.delete(project);
     }
-
-
 }

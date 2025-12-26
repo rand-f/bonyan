@@ -2,6 +2,9 @@ package com.example.bnyan.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,16 +25,25 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Positive(message = "budget must be a positive value")
+    @NotNull(message = "budget can not be empty")
+    @Column(columnDefinition = "double not null")
     private Double budget;
+
+    @NotEmpty(message = "project description can not be empty")
+    @Column(columnDefinition = "varchar(500) not null")
     private String description;
 
+    @NotNull(message = "start date is required")
     private LocalDate startDate;
+    @NotNull(message = "expected end date is required")
     private LocalDate expectedEndDate;
     private LocalDateTime created_at;
 
     //--------------------------------- relations ------------------------------
 
-    //private Stage stage;
+    @OneToMany(mappedBy = "project")
+    private Set<Task> task;
 
     @ManyToMany
     private Set<Specialist> specialists;
@@ -49,5 +61,4 @@ public class Project {
     @OneToMany
     @JsonIgnore
     private Set<SpecialistRequest>requests;
-
 }

@@ -17,15 +17,12 @@ import java.util.Set;
 @Entity
 public class ProjectManager {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    // I think it's better to have created_at in the user model since all users have it
-    // private LocalDateTime created_at;
 
     //--------------------------------- relations ------------------------------
 
-    //private Stage stage;
+    @OneToMany(mappedBy = "manager")
+    private Set<Task> task;
 
     @OneToOne
     @MapsId

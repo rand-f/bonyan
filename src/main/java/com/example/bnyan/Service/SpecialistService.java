@@ -26,10 +26,6 @@ public class SpecialistService {
         return specialistRepository.findAll();
     }
 
-   // public void addSpecialist(Specialist specialist) {
-   //     specialistRepository.save(specialist);
-   // }
-
     public void registerSpecialist(SpecialistDTO specialistDTO) {
         if (userRepository.getUserByUsername(specialistDTO.getUsername()) != null)
             throw new ApiException("Username already exists");

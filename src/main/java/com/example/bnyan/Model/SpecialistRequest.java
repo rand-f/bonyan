@@ -1,7 +1,7 @@
 package com.example.bnyan.Model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,11 +20,19 @@ public class SpecialistRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotEmpty(message = "description can not be empty")
+    @Size(max = 500, message = "description must not exceed 500 characters")
+    @Column(columnDefinition = "varchar(500) not null")
     private String description;
+
+    @NotNull(message = "expected start date is required")
     private LocalDate expectedStartDate;
+
+    @NotNull(message = "offered price is required")
+    @Positive(message = "offered price must be a positive value")
     private Double offeredPrice;
 
-    @Pattern(regexp = "^(pending|excepted|rejected)$",message = "status must be:")
+    @Pattern(regexp = "^(pending|excepted|rejected)$",message = "status must be: pending, excepted, or rejected")
     private String status;
 
 
@@ -33,7 +41,6 @@ public class SpecialistRequest {
 
     //--------------------------------- relations ------------------------------
 
-    //private Land land;
 
     @ManyToOne
     private Project project;

@@ -24,9 +24,6 @@ public class ProjectManagerService {
         return projectManagerRepository.findAll();
     }
 
-//    public void addProjectManager(ProjectManager manager) {
-//        projectManagerRepository.save(manager);
-//    }
 
     public void registerManager(ProjectManagerDTO managerDTO) {
         if (userRepository.getUserByUsername(managerDTO.getUsername()) != null)
