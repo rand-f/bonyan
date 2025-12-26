@@ -9,6 +9,7 @@ import com.example.bnyan.Repository.SpecialistRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,6 +39,9 @@ public class SpecialistRequestService {
 
         projectRepository.save(project);
         specialistRepository.save(specialist);
+
+        request.setProjectExpectedEndDate(project.getExpectedEndDate());
+        request.setCreated_at(LocalDateTime.now());
         request.setStatus("pending");
         requestRepository.save(request);
     }
@@ -64,6 +68,4 @@ public class SpecialistRequestService {
         }
         requestRepository.delete(request);
     }
-
-
 }

@@ -20,9 +20,6 @@ public class Specialist {
     @Id
     private Integer id;
 
-    // I think it's better to have created_at in the user model since all users have it
-    // private LocalDateTime created_at;
-
     @Pattern(regexp = "^(ARCHITECTURAL_ENGINEER|MECHANICAL_ENGINEER|ELECTRICAL_ENGINEER|CIVIL_ENGINEER|PROJECT_MANAGER|DESIGNER|GENERAL_CONTRACTOR)$",message = "specialty must be: ARCHITECTURAL_ENGINEER, MECHANICAL_ENGINEER, ELECTRICAL_ENGINEER, CIVIL_ENGINEER, PROJECT_MANAGER|DESIGNER or GENERAL_CONTRACTOR")
     @Column(columnDefinition = "varchar(50) not null")
     private String speciality;
@@ -36,8 +33,8 @@ public class Specialist {
     @JsonIgnore
     private Set<Project>projects;
 
-    //@OneToMany
-    //private Set<Review>reviews;
+    @OneToMany
+    private Set<Review>reviews;
 
     @OneToOne
     @MapsId

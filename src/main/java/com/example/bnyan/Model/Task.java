@@ -1,5 +1,6 @@
 package com.example.bnyan.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -44,11 +45,15 @@ public class Task {
     @Column(columnDefinition = "datetime default current_timestamp")
     private LocalDateTime createdAt;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    private Project project;
-//
-//    @ManyToOne
-//    @JsonIgnore
-//    private Specialist specialist;
+    @ManyToOne
+    @JsonIgnore
+    private Project project;
+
+    @ManyToOne
+    @JsonIgnore
+    private Specialist specialist;
+
+    @ManyToOne
+    @JsonIgnore
+    private ProjectManager manager;
 }

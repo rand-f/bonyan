@@ -36,7 +36,7 @@ public class Review {
     @JsonIgnore
     private Customer customer;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    private Specialist specialist;
+    @ManyToOne
+    @JsonIgnore
+    private Specialist specialist;
 }
