@@ -25,13 +25,13 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<UserRequest> userRequests;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Review> reviews;
+//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+//    private List<Review> reviews;
 
-    @OneToMany(mappedBy = "customer")
-    private List<Land> lands;
+//    @OneToMany(mappedBy = "customer")
+//    private List<Land> lands;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<BuildRequest> buildRequests;
+//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+//    private List<BuildRequest> buildRequests;
 
 }
