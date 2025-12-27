@@ -1,11 +1,9 @@
 package com.example.bnyan.Service;
 import com.example.bnyan.Api.ApiException;
-import com.example.bnyan.DTO.CustomerDTO;
 import com.example.bnyan.DTO.ProjectManagerDTO;
-import com.example.bnyan.Model.Customer;
-import com.example.bnyan.Model.ProjectManager;
-import com.example.bnyan.Model.User;
+import com.example.bnyan.Model.*;
 import com.example.bnyan.Repository.ProjectManagerRepository;
+import com.example.bnyan.Repository.SpecialistRequestRepository;
 import com.example.bnyan.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +17,7 @@ public class ProjectManagerService {
 
     private final ProjectManagerRepository projectManagerRepository;
     private final UserRepository userRepository;
+    private final SpecialistRequestRepository specialistRequestRepository;
 
     public List<ProjectManager> getAll() {
         return projectManagerRepository.findAll();
@@ -44,6 +43,41 @@ public class ProjectManagerService {
         ProjectManager projectManager =new ProjectManager();
         projectManager.setUser(user);
         projectManagerRepository.save(projectManager);
+    }
+
+    public void exceptRequest(Integer manager_id, Integer request_id){
+        ProjectManager manager= projectManagerRepository.findProjectManagerById(manager_id);
+        SpecialistRequest specialistRequest =specialistRequestRepository.findSpecialistRequestById(request_id);
+
+        if (manager==null||specialistRequest==null){
+            throw new ApiException("can not except this request");
+        }
+
+        if(manager.getId()!=specialistRequest.getManager().getId()){
+            throw new ApiException("unauthorized to except this request");
+        }
+
+        Project project =specialistRequest.getProject();
+
+        manager.getProject().add(project);
+        project.setManager(manager);
+
+        specialistRequest.setStatus("excepted");
+    }
+
+    public void rejectRequest(Integer manager_id, Integer request_id){
+        ProjectManager manager = projectManagerRepository.findProjectManagerById(manager_id);
+        SpecialistRequest specialistRequest =specialistRequestRepository.findSpecialistRequestById(request_id);
+
+        if (manager==null||specialistRequest==null){
+            throw new ApiException("can not except this request");
+        }
+
+        if(manager.getId()!=specialistRequest.getSpecialist().getId()){
+            throw new ApiException("unauthorized to except this request");
+        }
+
+        specialistRequest.setStatus("rejected");
     }
 
     public void deleteProjectManager(Integer id) {

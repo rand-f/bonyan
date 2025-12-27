@@ -1,7 +1,10 @@
 package com.example.bnyan.Controller;
+import com.example.bnyan.DTO.ProjectDTO;
 import com.example.bnyan.Model.Project;
 import com.example.bnyan.Service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +24,9 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getAll());
     }
 
-    @PostMapping("/add/{customer_id}")
-    public ResponseEntity<?> addProject(@PathVariable Integer customer_id,
-                                        @RequestBody Project project) {
-        projectService.addProject(customer_id, project);
+    @PostMapping("/add/{customer_id}/{request_id}")
+    public ResponseEntity<?> addProject(@PathVariable Integer customer_id, @PathVariable Integer request_id,@RequestBody ProjectDTO project) {
+        projectService.addProject(customer_id,request_id, project);
         return ResponseEntity.ok(new ApiResponse("project added successfully"));
     }
 
@@ -39,5 +41,17 @@ public class ProjectController {
     public ResponseEntity<?> deleteProject(@PathVariable Integer id) {
         projectService.deleteProject(id);
         return ResponseEntity.ok(new ApiResponse("project deleted successfully"));
+    }
+
+    @PostMapping("/generate-image/{project_id}")
+    public ResponseEntity<?> generateDraft(@PathVariable Integer project_id) {
+
+        byte[] image = projectService.generateImage(project_id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"draft-building.jpeg\"")
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(image);
     }
 }

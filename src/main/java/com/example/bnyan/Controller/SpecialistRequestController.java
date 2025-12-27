@@ -5,7 +5,6 @@ import com.example.bnyan.Service.SpecialistRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.bnyan.Api.ApiResponse;
@@ -22,11 +21,15 @@ public class SpecialistRequestController {
         return ResponseEntity.ok(requestService.getAll());
     }
 
-    @PostMapping("/add/{project_id}/{spec_id}")
-    public ResponseEntity<?> addRequest(@PathVariable Integer project_id,
-                                        @PathVariable Integer spec_id,
-                                        @RequestBody SpecialistRequest request) {
-        requestService.addRequest(request, project_id, spec_id);
+    @PostMapping("/add-specialist/{project_id}/{spec_id}")
+    public ResponseEntity<?> addSpecialistRequest(@PathVariable Integer project_id, @PathVariable Integer spec_id, @RequestBody SpecialistRequest request) {
+        requestService.addSpecialistRequest(request, project_id, spec_id);
+        return ResponseEntity.ok(new ApiResponse("request added successfully"));
+    }
+
+    @PostMapping("/add-manager/{project_id}/{manager_id}")
+    public ResponseEntity<?> addManagerRequest(@PathVariable Integer project_id, @PathVariable Integer manager_id, @RequestBody SpecialistRequest request) {
+        requestService.addManagerRequest(request, project_id, manager_id);
         return ResponseEntity.ok(new ApiResponse("request added successfully"));
     }
 

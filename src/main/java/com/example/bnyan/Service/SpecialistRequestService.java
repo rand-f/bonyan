@@ -1,8 +1,10 @@
 package com.example.bnyan.Service;
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.Model.Project;
+import com.example.bnyan.Model.ProjectManager;
 import com.example.bnyan.Model.Specialist;
 import com.example.bnyan.Model.SpecialistRequest;
+import com.example.bnyan.Repository.ProjectManagerRepository;
 import com.example.bnyan.Repository.ProjectRepository;
 import com.example.bnyan.Repository.SpecialistRepository;
 import com.example.bnyan.Repository.SpecialistRequestRepository;
@@ -19,12 +21,13 @@ public class SpecialistRequestService {
     private final SpecialistRequestRepository requestRepository;
     private final SpecialistRepository specialistRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectManagerRepository projectManagerRepository;
 
     public List<SpecialistRequest> getAll() {
         return requestRepository.findAll();
     }
 
-    public void addRequest(SpecialistRequest request, Integer project_id,Integer spec_id) {
+    public void addSpecialistRequest(SpecialistRequest request, Integer project_id, Integer spec_id) {
         Project project = projectRepository.findProjectById(project_id);
         Specialist specialist= specialistRepository.findSpecialistById(spec_id);
 
@@ -39,6 +42,28 @@ public class SpecialistRequestService {
 
         projectRepository.save(project);
         specialistRepository.save(specialist);
+
+        request.setProjectExpectedEndDate(project.getExpectedEndDate());
+        request.setCreated_at(LocalDateTime.now());
+        request.setStatus("pending");
+        requestRepository.save(request);
+    }
+
+    public void addManagerRequest(SpecialistRequest request, Integer project_id, Integer manager_id) {
+        Project project = projectRepository.findProjectById(project_id);
+        ProjectManager manager = projectManagerRepository.findProjectManagerById(manager_id);
+
+        if(project==null || manager==null){
+            throw new ApiException("this project request can nt be assigned to the specialist");
+        }
+
+        request.setProject(project);
+        project.getRequests().add(request);
+        request.setManager(manager);
+        manager.getRequests().add(request);
+
+        projectRepository.save(project);
+        projectManagerRepository.save(manager);
 
         request.setProjectExpectedEndDate(project.getExpectedEndDate());
         request.setCreated_at(LocalDateTime.now());

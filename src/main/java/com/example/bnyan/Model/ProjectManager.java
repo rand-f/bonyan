@@ -32,4 +32,7 @@ public class ProjectManager {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "manager")
     private Set<Project> project;
 
+    @OneToMany
+    @JsonIgnore
+    private Set<SpecialistRequest>requests;
 }

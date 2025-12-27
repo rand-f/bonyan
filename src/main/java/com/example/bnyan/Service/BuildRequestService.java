@@ -1,10 +1,7 @@
 package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
-import com.example.bnyan.Model.BuildRequest;
-import com.example.bnyan.Model.Customer;
-import com.example.bnyan.Model.Land;
-import com.example.bnyan.Model.User;
+import com.example.bnyan.Model.*;
 import com.example.bnyan.Repository.BuildRequestRepository;
 import com.example.bnyan.Repository.CustomerRepository;
 import com.example.bnyan.Repository.LandRepository;
@@ -134,4 +131,26 @@ public class BuildRequestService {
 
         return buildRequests;
     }
+
+    public void approveRequest(//Integer using_id,
+                               Integer request_id){
+
+        //authorization can be done later
+
+//        User user = userRepository.getUserById(using_id);
+//        if (user==null){
+//            throw new ApiException("user not found");
+//        }
+//        if(!user.getRole().equals("ADMIN")){
+//            throw new ApiException("unauthorized to make this gange");
+//        }
+
+        BuildRequest buildRequest= buildRequestRepository.getBuildRequestById(request_id);
+        if(buildRequest==null){
+//            throw new ApiException("request not found");
+        }
+
+        buildRequest.setStatus("approved");
+    }
+
 }

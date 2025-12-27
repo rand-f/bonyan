@@ -51,7 +51,7 @@ public class Project {
     @ManyToOne
     @MapsId
     @JsonIgnore
-    private ProjectManager projectManager;
+    private ProjectManager manager;
 
     @ManyToOne
     @MapsId
@@ -61,4 +61,9 @@ public class Project {
     @OneToMany
     @JsonIgnore
     private Set<SpecialistRequest>requests;
+
+    @OneToOne
+    @MapsId
+    @JsonIgnore
+    private BuildRequest buildRequest;
 }
