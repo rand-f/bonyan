@@ -26,12 +26,6 @@ public class UserRequestController {
         return ResponseEntity.status(200).body(new ApiResponse("User request added"));
     }
 
-    @PutMapping("/update-status/{requestId}/{adminId}/{status}")
-    public ResponseEntity<?> updateStatus(@PathVariable Integer requestId, @PathVariable Integer adminId, @PathVariable String status) {
-        userRequestService.updateStatus(requestId, adminId, status);
-        return ResponseEntity.status(200).body(new ApiResponse("User request status updated"));
-    }
-
     @DeleteMapping("/delete/{requestId}/{customerId}")
     public ResponseEntity<?> delete(@PathVariable Integer requestId, @PathVariable Integer customerId) {
         userRequestService.delete(requestId, customerId);
@@ -56,5 +50,17 @@ public class UserRequestController {
     @GetMapping("/get-by-customer-id/{customerId}")
     public ResponseEntity<?> getUserRequestsByCustomerId(@PathVariable Integer customerId) {
         return ResponseEntity.status(200).body(userRequestService.getUserRequestsByCustomerId(customerId));
+    }
+
+    @PutMapping("/accept/{requestId}")
+    public ResponseEntity<?> acceptRequest(@PathVariable Integer requestId) {
+        userRequestService.acceptRequest(requestId);
+        return ResponseEntity.status(200).body(new ApiResponse("User request accepted"));
+    }
+
+    @PutMapping("/reject/{requestId}")
+    public ResponseEntity<?> rejectRequest(@PathVariable Integer requestId) {
+        userRequestService.rejectRequest(requestId);
+        return ResponseEntity.status(200).body(new ApiResponse("User request rejected"));
     }
 }

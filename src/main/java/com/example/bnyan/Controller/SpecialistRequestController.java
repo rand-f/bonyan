@@ -1,24 +1,40 @@
 package com.example.bnyan.Controller;
 
+import com.example.bnyan.Api.ApiResponse;
 import com.example.bnyan.Model.SpecialistRequest;
 import com.example.bnyan.Service.SpecialistRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.bnyan.Api.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/specialist-request")
 @RequiredArgsConstructor
 public class SpecialistRequestController {
 
-    private final SpecialistRequestService requestService;
+    private final SpecialistRequestService specialistRequestService;
 
     @GetMapping("/get")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(requestService.getAll());
+        return ResponseEntity.status(200).body(specialistRequestService.getAll());
+    }
+
+    @PostMapping("/add/{projectId}/{specialistId}")
+    public ResponseEntity<?> addRequest(@RequestBody @Valid SpecialistRequest request,
+                                        @PathVariable Integer projectId,
+                                        @PathVariable Integer specialistId) {
+        specialistRequestService.addRequest(request, projectId, specialistId);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist request added"));
+    }
+
+    @PutMapping("/accept/{requestId}")
+    public ResponseEntity<?> acceptRequest(@PathVariable Integer requestId) {
+        specialistRequestService.acceptRequest(requestId);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist request accepted"));
     }
 
     @PostMapping("/add-specialist/{project_id}/{spec_id}")
@@ -31,18 +47,22 @@ public class SpecialistRequestController {
     public ResponseEntity<?> addManagerRequest(@PathVariable Integer project_id, @PathVariable Integer manager_id, @RequestBody SpecialistRequest request) {
         requestService.addManagerRequest(request, project_id, manager_id);
         return ResponseEntity.ok(new ApiResponse("request added successfully"));
+    @PutMapping("/reject/{requestId}")
+    public ResponseEntity<?> rejectRequest(@PathVariable Integer requestId) {
+        specialistRequestService.rejectRequest(requestId);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist request rejected"));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateRequest(@PathVariable Integer id,
-                                           @RequestBody SpecialistRequest request) {
-        requestService.updateRequest(id, request);
-        return ResponseEntity.ok(new ApiResponse("request updated successfully"));
+    @PutMapping("/update/{requestId}")
+    public ResponseEntity<?> updateRequest(@PathVariable Integer requestId,
+                                           @RequestBody @Valid SpecialistRequest request) {
+        specialistRequestService.updateRequest(requestId, request);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist request updated"));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteRequest(@PathVariable Integer id) {
-        requestService.deleteRequest(id);
-        return ResponseEntity.ok(new ApiResponse("request deleted successfully"));
+    @DeleteMapping("/delete/{requestId}")
+    public ResponseEntity<?> deleteRequest(@PathVariable Integer requestId) {
+        specialistRequestService.deleteRequest(requestId);
+        return ResponseEntity.status(200).body(new ApiResponse("Specialist request deleted"));
     }
 }

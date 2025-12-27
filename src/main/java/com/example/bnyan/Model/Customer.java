@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -25,13 +24,13 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<UserRequest> userRequests;
 
-//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-//    private List<Review> reviews;
+   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<Review> reviews;
 
-//    @OneToMany(mappedBy = "customer")
-//    private List<Land> lands;
+    @OneToMany(mappedBy = "customer")
+    private List<Land> lands;
 
-//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-//    private List<BuildRequest> buildRequests;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<BuildRequest> buildRequests;
 
 }
