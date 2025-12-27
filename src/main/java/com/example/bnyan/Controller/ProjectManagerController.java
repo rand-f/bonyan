@@ -24,6 +24,18 @@ public class ProjectManagerController {
         return ResponseEntity.ok(new ApiResponse("project manager registered successfully"));
     }
 
+    @PutMapping("/accept-request/{manager_id}/{request_id}")
+    public ResponseEntity<?> acceptRequest(@PathVariable Integer manager_id, @PathVariable Integer request_id) {
+        projectManagerService.exceptRequest(manager_id, request_id);
+        return ResponseEntity.ok(new ApiResponse("request accepted successfully"));
+    }
+
+    @PutMapping("/reject-request/{manager_id}/{request_id}")
+    public ResponseEntity<?> rejectRequest(@PathVariable Integer manager_id, @PathVariable Integer request_id) {
+        projectManagerService.rejectRequest(manager_id, request_id);
+        return ResponseEntity.ok(new ApiResponse("request rejected successfully"));
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteManager(@PathVariable Integer id) {
         projectManagerService.deleteProjectManager(id);

@@ -23,8 +23,7 @@ public class BuildRequest {
     private Integer id;
 
     @NotEmpty(message = "status must be filled")
-    @Pattern(regexp = "^(approved|rejected|processing)$",
-            message = "status must be approved or rejected or processing")
+    @Pattern(regexp = "^(approved|rejected|processing)$", message = "status must be approved or rejected or processing")
     @Column(columnDefinition = "varchar(20) not null")
     private String status;
 
@@ -39,8 +38,7 @@ public class BuildRequest {
     @JsonIgnore
     private Land land;
 
-   @OneToOne
-   @JsonIgnore
-   private Project project;
+    @OneToOne(cascade = CascadeType.ALL,mappedBy = "buildRequest")
+    private Project project;
 
 }
