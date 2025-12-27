@@ -39,8 +39,8 @@ public class BuildRequest {
     @JsonIgnore
     private Land land;
 
-//    @OneToOne
-//    @JsonIgnore
-//    private Project project;
+   @OneToOne
+   @JsonIgnore
+   private Project project;
 
 }

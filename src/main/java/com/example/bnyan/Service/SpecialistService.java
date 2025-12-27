@@ -1,6 +1,6 @@
 package com.example.bnyan.Service;
+
 import com.example.bnyan.Api.ApiException;
-import com.example.bnyan.DTO.ProjectManagerDTO;
 import com.example.bnyan.DTO.SpecialistDTO;
 import com.example.bnyan.Model.*;
 import com.example.bnyan.Repository.DomainRepository;
@@ -21,6 +21,7 @@ public class SpecialistService {
     private final DomainRepository domainRepository;
     private final UserRepository userRepository;
     private final SpecialistRequestRepository specialistRequestRepository;
+    private final SpecialistRequestService specialistRequestService;
 
     public List<Specialist> getAll() {
         return specialistRepository.findAll();
@@ -42,17 +43,17 @@ public class SpecialistService {
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        Specialist specialist=new Specialist();
+        Specialist specialist = new Specialist();
         specialist.setSpeciality(specialistDTO.getSpeciality());
         specialist.setUser(user);
         specialistRepository.save(specialist);
     }
 
-    public void assignDomain(Integer specialist_id, Integer domain_id){
-        Specialist specialist= specialistRepository.findSpecialistById(specialist_id);
+    public void assignDomain(Integer specialist_id, Integer domain_id) {
+        Specialist specialist = specialistRepository.findSpecialistById(specialist_id);
         Domain domain = domainRepository.findDomainById(domain_id);
 
-        if(specialist==null||domain==null){
+        if (specialist == null || domain == null) {
             throw new ApiException("can not assign this domain to this specialist");
         }
 
@@ -62,39 +63,34 @@ public class SpecialistService {
         domainRepository.save(domain);
     }
 
-    public void exceptRequest(Integer spec_id,Integer request_id){
+    public void acceptRequest(Integer spec_id, Integer request_id) {
         Specialist specialist = specialistRepository.findSpecialistById(spec_id);
-        SpecialistRequest specialistRequest =specialistRequestRepository.findSpecialistRequestById(request_id);
+        SpecialistRequest specialistRequest = specialistRequestRepository.findSpecialistRequestById(request_id);
 
-        if (specialist==null||specialistRequest==null){
-            throw new ApiException("can not except this request");
+        if (specialist == null || specialistRequest == null) {
+            throw new ApiException("can not accept this request");
         }
 
-        if(specialist.getId()!=specialistRequest.getSpecialist().getId()){
-            throw new ApiException("unauthorized to except this request");
+        if (!specialist.getId().equals(specialistRequest.getSpecialist().getId())) {
+            throw new ApiException("unauthorized to accept this request");
         }
 
-        Project project =specialistRequest.getProject();
-
-        specialist.getProjects().add(project);
-        project.getSpecialists().add(specialist);
-
-        specialistRequest.setStatus("excepted");
+        specialistRequestService.acceptRequest(request_id);
     }
 
-    public void rejectRequest(Integer spec_id,Integer request_id){
+    public void rejectRequest(Integer spec_id, Integer request_id) {
         Specialist specialist = specialistRepository.findSpecialistById(spec_id);
-        SpecialistRequest specialistRequest =specialistRequestRepository.findSpecialistRequestById(request_id);
+        SpecialistRequest specialistRequest = specialistRequestRepository.findSpecialistRequestById(request_id);
 
-        if (specialist==null||specialistRequest==null){
-            throw new ApiException("can not except this request");
+        if (specialist == null || specialistRequest == null) {
+            throw new ApiException("can not reject this request");
         }
 
-        if(specialist.getId()!=specialistRequest.getSpecialist().getId()){
-            throw new ApiException("unauthorized to except this request");
+        if (!specialist.getId().equals(specialistRequest.getSpecialist().getId())) {
+            throw new ApiException("unauthorized to reject this request");
         }
 
-        specialistRequest.setStatus("rejected");
+        specialistRequestService.rejectRequest(request_id);
     }
 
     public void updateSpecialist(Integer id, Specialist specialist) {

@@ -37,7 +37,7 @@ public class SpecialistController {
 
     @PutMapping("/accept-request/{spec_id}/{request_id}")
     public ResponseEntity<?> acceptRequest(@PathVariable Integer spec_id, @PathVariable Integer request_id) {
-        specialistService.exceptRequest(spec_id, request_id);
+        specialistService.acceptRequest(spec_id, request_id);
         return ResponseEntity.ok(new ApiResponse("request accepted successfully"));
     }
 
