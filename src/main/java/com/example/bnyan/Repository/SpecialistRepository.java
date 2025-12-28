@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface SpecialistRepository extends JpaRepository<Specialist,Integer> {
 
     Specialist findSpecialistById(Integer id);
+
+    Specialist getSpecialistById(Integer id);
 }
