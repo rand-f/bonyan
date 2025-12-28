@@ -1,6 +1,5 @@
 package com.example.bnyan.Stability;
 
-import com.example.bnyan.DTO.ProjectDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,6 +12,51 @@ public class PromptBuilder {
             Description: %s
             """.formatted(
             description
+        );
+    }
+
+    public String askAI(String question){
+        return """
+            You are a specialist working in constructions projects.
+            Your customers will ask you constructing related questions.
+            You must advice them in a clear and simple way assuming they do not have knowledge in this field.
+            The answer must be in JSON format.
+            Description: %s
+            Requirements:
+            - Return ONLY valid JSON.
+            - JSON format: {"answer":"..."}
+            """.formatted(
+                question
+        );
+    }
+
+    public String predictTime(String question){
+        return """
+            You are a specialist working in constructions projects.
+            Your customers will provide you with a project description and project 
+            You must advice them in a clear and simple way assuming they do not have knowledge in this field.
+            The answer must be in JSON format.
+            Description: %s
+            Requirements:
+            - Return ONLY valid JSON.
+            - JSON format: {"answer":"..."}
+            """.formatted(
+                question
+        );
+    }
+
+    public String predictBudget(String question){
+        return """
+            You are a specialist working in constructions projects.
+            Your customers will ask you constructing related questions.
+            You must advice them in a clear and simple way assuming they do not have knowledge in this field.
+            The answer must be in JSON format.
+            Description: %s
+            Requirements:
+            - Return ONLY valid JSON.
+            - JSON format: {"answer":"..."}
+            """.formatted(
+                question
         );
     }
 }

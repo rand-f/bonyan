@@ -2,10 +2,7 @@ package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.Model.*;
-import com.example.bnyan.Repository.BuildRequestRepository;
-import com.example.bnyan.Repository.CustomerRepository;
-import com.example.bnyan.Repository.LandRepository;
-import com.example.bnyan.Repository.UserRepository;
+import com.example.bnyan.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +17,7 @@ public class BuildRequestService {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final LandRepository landRepository;
+    private final ProjectRepository projectRepository;
 
     public List<BuildRequest> get() {
         List<BuildRequest> buildRequests = buildRequestRepository.findAll();
@@ -147,10 +145,23 @@ public class BuildRequestService {
 
         BuildRequest buildRequest= buildRequestRepository.getBuildRequestById(request_id);
         if(buildRequest==null){
-//            throw new ApiException("request not found");
+            throw new ApiException("request not found");
+        }
+
+        Project project = projectRepository.findProjectById(buildRequest.getProject().getId());
+        Land land = landRepository.getLandById(buildRequest.getLand().getId());
+
+        if(project==null||land==null){
+            throw new ApiException("can not complete this process because the project or land not found");
         }
 
         buildRequest.setStatus("approved");
+        project.setLand(land);
+        land.setProject(project);
+
+        projectRepository.save(project);
+        landRepository.save(land);
+        buildRequestRepository.save(buildRequest);
     }
 
 }

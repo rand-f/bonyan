@@ -1,5 +1,6 @@
 package com.example.bnyan.Controller;
 
+import com.example.bnyan.DTO.QuestionDTO;
 import com.example.bnyan.Service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,5 +21,10 @@ public class CustomerController {
     @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(customerService.getCustomerById(id));
+    }
+
+    @PostMapping("/ask-ai")
+    public ResponseEntity<?> askAI(@RequestBody QuestionDTO questionDTO){
+        return ResponseEntity.ok(customerService.askAI(questionDTO.getQuestion()));
     }
 }

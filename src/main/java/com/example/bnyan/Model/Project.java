@@ -36,6 +36,7 @@ public class Project {
 
     @NotNull(message = "start date is required")
     private LocalDate startDate;
+
     @NotNull(message = "expected end date is required")
     private LocalDate expectedEndDate;
     private LocalDateTime created_at;
@@ -66,4 +67,7 @@ public class Project {
     @MapsId
     @JsonIgnore
     private BuildRequest buildRequest;
+
+    @OneToOne
+    private Land land;
 }

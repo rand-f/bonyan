@@ -40,4 +40,8 @@ public class Land {
     @ManyToOne
     @JsonIgnore
     private Customer customer;
+
+    @OneToOne(mappedBy = "land")
+    @JsonIgnore
+    private Project project;
 }
