@@ -1,4 +1,5 @@
 package com.example.bnyan.Controller;
+import com.example.bnyan.DTO.ProjectAIDTO;
 import com.example.bnyan.DTO.ProjectDTO;
 import com.example.bnyan.Model.Project;
 import com.example.bnyan.Service.ProjectService;
@@ -24,10 +25,25 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getAll());
     }
 
+    @GetMapping("/get-my-projects{customer_id}")
+    public ResponseEntity<?> getAll(@PathVariable Integer customer_id) {
+        return ResponseEntity.ok(projectService.getMyProjects(customer_id));
+    }
+
     @PostMapping("/add/{customer_id}/{request_id}")
     public ResponseEntity<?> addProject(@PathVariable Integer customer_id, @PathVariable Integer request_id,@RequestBody ProjectDTO project) {
         projectService.addProject(customer_id,request_id, project);
         return ResponseEntity.ok(new ApiResponse("project added successfully"));
+    }
+
+    @PostMapping("/budget/{customer_id}")
+    public ResponseEntity<?> projectBudget(@PathVariable Integer customer_id, @RequestBody ProjectAIDTO project) {
+        return ResponseEntity.ok(projectService.predictBudget(customer_id, project));
+    }
+
+    @PostMapping("/time-prediction/{customer_id}")
+    public ResponseEntity<?> projectTime(@PathVariable Integer customer_id, @RequestBody ProjectAIDTO project) {
+        return ResponseEntity.ok(projectService.predictBudget(customer_id, project));
     }
 
     @PutMapping("/update/{id}")

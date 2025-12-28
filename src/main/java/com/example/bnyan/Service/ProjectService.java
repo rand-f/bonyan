@@ -1,10 +1,14 @@
 package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
+import com.example.bnyan.DTO.PredictionBudgetDTO;
+import com.example.bnyan.DTO.PredictionTimeDTO;
+import com.example.bnyan.DTO.ProjectAIDTO;
 import com.example.bnyan.DTO.ProjectDTO;
 import com.example.bnyan.Model.BuildRequest;
 import com.example.bnyan.Model.Customer;
 import com.example.bnyan.Model.Project;
+import com.example.bnyan.OpenAI.AiService;
 import com.example.bnyan.Repository.BuildRequestRepository;
 import com.example.bnyan.Repository.CustomerRepository;
 import com.example.bnyan.Repository.ProjectRepository;
@@ -25,6 +29,7 @@ public class ProjectService {
     private final BuildRequestRepository buildRequestRepository;
     private final PromptBuilder promptBuilder;
     private final ImageGenerationService imageGenerationService;
+    private final AiService aiService;
 
     //only for admin
     public List<Project> getAll() {
@@ -42,6 +47,7 @@ public class ProjectService {
         return projectRepository.findProjectsByCustomer(customer);
     }
 
+
     public void addProject(Integer customer_id, Integer request_id, ProjectDTO projectDTO) {
 
         Customer customer= customerRepository.getCustomerById(customer_id);
@@ -58,15 +64,60 @@ public class ProjectService {
             throw new ApiException("can not start project because this project request is not approved");
         }
 
-        Project project = new Project();
+        Project project = buildRequest.getProject();
+        if(project==null){
+            throw new ApiException("project not found");
+        }
 
-        project.setBudget(projectDTO.getBudget());
+        ProjectAIDTO aiDTO = new ProjectAIDTO();
+        aiDTO.setDescription(project.getDescription());
+        aiDTO.setStartDate(project.getStartDate());
+        aiDTO.setLandSize(buildRequest.getLand().getSize());
+        aiDTO.setLocation(buildRequest.getLand().getLocation());
+
+
+        // if user did not specify budget AI will
+        if(projectDTO.getBudget()==null){
+            PredictionBudgetDTO budgetDTO= predictBudget(customer_id,aiDTO);
+            project.setBudget(budgetDTO.getMaxBudget()+budgetDTO.getMinBudget()*0.5);
+            aiDTO.setBudget(budgetDTO.getMaxBudget()+budgetDTO.getMinBudget()*0.5);
+        }else{
+            project.setBudget(projectDTO.getBudget());
+            aiDTO.setBudget(projectDTO.getBudget());
+        }
+
+        // if user did not specify time AI will
+        if(projectDTO.getProjectPeriod()==null){
+            PredictionTimeDTO timeDTO = predictTime(customer_id,aiDTO);
+            project.setDuration(timeDTO.getExpectedProjectPeriod());
+            project.setExpectedEndDate(projectDTO.getStartDate().plusDays(projectDTO.getProjectPeriod()));
+        }else{
+            project.setDuration(projectDTO.getProjectPeriod());
+            project.setExpectedEndDate(projectDTO.getStartDate().plusDays(projectDTO.getProjectPeriod()));
+        }
+
         project.setDescription(projectDTO.getDescription());
         project.setStartDate(projectDTO.getStartDate());
 
         project.setCustomer(customer);
         project.setCreated_at(LocalDateTime.now());
         projectRepository.save(project);
+    }
+
+    public PredictionBudgetDTO predictBudget(Integer customer_id, ProjectAIDTO aiDTO){
+        Customer customer= customerRepository.getCustomerById(customer_id);
+        if(customer==null){
+            throw new ApiException("Customer not found");
+        }
+        return aiService.predictBudget(aiDTO);
+    }
+
+    public PredictionTimeDTO predictTime(Integer customer_id, ProjectAIDTO aiDTO){
+        Customer customer= customerRepository.getCustomerById(customer_id);
+        if(customer==null){
+            throw new ApiException("Customer not found");
+        }
+        return aiService.predictTime(aiDTO);
     }
 
     public void updateProject(Integer id, Project project) {
