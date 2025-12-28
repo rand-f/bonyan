@@ -37,6 +37,9 @@ public class Project {
     @NotNull(message = "start date is required")
     private LocalDate startDate;
 
+    @Positive(message = "duration must be a positive value")
+    private Integer duration;
+
     @NotNull(message = "expected end date is required")
     private LocalDate expectedEndDate;
     private LocalDateTime created_at;

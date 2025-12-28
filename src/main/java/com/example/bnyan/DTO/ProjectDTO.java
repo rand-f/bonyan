@@ -15,17 +15,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ProjectDTO {
     @Positive(message = "budget must be a positive value")
-    @NotNull(message = "budget can not be empty")
-    @Column(columnDefinition = "double not null")
+    //@NotNull(message = "budget can not be empty")
     private Double budget;
 
     @NotEmpty(message = "project description can not be empty")
-    @Column(columnDefinition = "varchar(500) not null")
     private String description;
 
     @NotNull(message = "start date is required")
     private LocalDate startDate;
 
-    @NotNull(message = "project period can not be null")
-    private Integer projectPeriod;
+    //@NotNull(message = "project period can not be null")
+    private Integer projectPeriod; //days
 }
