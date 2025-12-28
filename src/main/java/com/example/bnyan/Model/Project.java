@@ -73,4 +73,7 @@ public class Project {
 
     @OneToOne
     private Land land;
+
+    @OneToMany(mappedBy = "project")
+    private Set<Meeting> meeting;
 }
