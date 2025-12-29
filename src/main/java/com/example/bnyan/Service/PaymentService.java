@@ -1,96 +1,113 @@
 package com.example.bnyan.Service;
 
-import com.example.bnyan.DTO.PayeeDTO;
-import com.example.bnyan.DTO.PayerDTO;
-import com.example.bnyan.DTO.PaymentResponseDTO;
-import com.example.bnyan.Model.Customer;
-import com.example.bnyan.Model.Payment;
-import com.example.bnyan.Model.Specialist;
-import com.example.bnyan.Repository.PaymentRepository;
-import com.stripe.model.PaymentIntent;
-import jakarta.annotation.PostConstruct;
+import com.example.bnyan.Model.Card;
+import com.example.bnyan.Model.PaymentRequest;
+import com.example.bnyan.Model.PaymentResult;
+import com.example.bnyan.Model.PaymentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final PaymentRepository paymentRepository;
 
-    @Value("${stripe.api.key}")
-    private String stripeKey;
+    @Value("${moyasar.api.key}")
+    private String apiKey;
 
-    @PostConstruct
-    public void init() {
-        com.stripe.Stripe.apiKey = stripeKey;
-    }
+    private static final String MOYASAR_API_URL =
+            "https://api.moyasar.com/v1/payments";
 
-    public PaymentResponseDTO createMarketplacePayment(
-            Customer payer,           // Customer entity
-            Specialist specialist,
-            int amount,
-            int platformFee
-    ) {
+    private final RestTemplate restTemplate = new RestTemplate();
+    public PaymentResult createPayment(PaymentRequest request) {
         try {
-            int specialistAmount = amount - platformFee;
+            // Ensure amount ends with 0
+            int amount = request.getAmount();
+            if (amount % 10 != 0) {
+                amount = ((amount + 9) / 10) * 10; // round up to nearest 10
+            }
+            int amountInHalala = amount * 100;
 
-            // Stripe payment parameters
-            Map<String, Object> params = new HashMap<>();
-            params.put("amount", amount); // in halalas
-            params.put("currency", "sar");
-            params.put("payment_method_types", List.of("card"));
-            params.put("application_fee_amount", platformFee);
+            Card card = request.getSource();
 
-            Map<String, Object> transferData = new HashMap<>();
-            transferData.put("destination", specialist.getStripeAccountId());
-            params.put("transfer_data", transferData);
+            String body = String.format(
+                    "amount=%d&currency=SAR&description=%s&callback_url=%s&" +
+                            "source[type]=card&source[name]=%s&source[number]=%s&" +
+                            "source[cvc]=%s&source[month]=%s&source[year]=%s",
+                    amountInHalala,
+                    request.getDescription(),
+                    request.getCallbackUrl(),
+                    card.getName(),
+                    card.getNumber(),
+                    card.getCvc(),
+                    card.getMonth(),
+                    card.getYear()
+            );
 
-            // Create Stripe PaymentIntent
-            PaymentIntent intent = PaymentIntent.create(params);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.setBasicAuth(apiKey, "");
 
-            // Create Payment
-            Payment payment = new Payment();
-            payment.setStripePaymentIntentId(intent.getId());
-            payment.setAmount(amount);
-            payment.setPlatformFee(platformFee);
-            payment.setSpecialistAmount(specialistAmount);
-            payment.setStatus("PENDING");
-            payment.setPayer(payer);
-            payment.setPayee(specialist);
-            payment.setCreatedAt(LocalDateTime.now()); // ensure time is set
+            HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-            // Save Payment
-            paymentRepository.save(payment);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    MOYASAR_API_URL,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
 
-            // Build and return DTO
-            return PaymentResponseDTO.builder()
-                    .paymentId(payment.getId())
-                    .paymentIntentId(intent.getId())
-                    .clientSecret(intent.getClientSecret())
-                    .status(payment.getStatus())
-                    .amount(payment.getAmount())
-                    .currency("SAR")
-                    .platformFee(payment.getPlatformFee())
-                    .specialistAmount(payment.getSpecialistAmount())
-                    .gateway("STRIPE")
-                    .createdAt(payment.getCreatedAt())
-                    .payer(new PayerDTO(payer.getUser().getId(), payer.getUser().getFullName()))
-                    .payee(new PayeeDTO(specialist.getId(), specialist.getUser().getFullName()))
-                    .build();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(response.getBody());
+
+            PaymentResult result = new PaymentResult();
+            result.setSuccess(response.getStatusCode().is2xxSuccessful());
+            result.setPaymentId(jsonNode.get("id").asText());
+            result.setTransactionUrl(jsonNode.get("source").get("transaction_url").asText());
+            result.setMessage("Payment initiated successfully");
+
+            return result;
 
         } catch (Exception e) {
-            // for errors
-            throw new RuntimeException("Failed to create payment: " + e.getMessage(), e);
+            PaymentResult result = new PaymentResult();
+            result.setSuccess(false);
+            result.setMessage("Payment failed: " + e.getMessage());
+            return result;
         }
     }
 
+    public PaymentStatus getPaymentStatus(String paymentId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBasicAuth(apiKey, "");
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    MOYASAR_API_URL + "/" + paymentId,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(response.getBody(), PaymentStatus.class);
+
+        } catch (Exception e) {
+            // Return a PaymentStatus with error info
+            PaymentStatus errorStatus = new PaymentStatus();
+            errorStatus.setId(paymentId);
+            errorStatus.setStatus("error");
+            errorStatus.setDescription("Failed to get payment status: " + e.getMessage());
+            return errorStatus;
+        }
+    }
 
 
 }

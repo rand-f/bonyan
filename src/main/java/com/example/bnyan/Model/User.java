@@ -24,6 +24,13 @@ public class User {
     @Column(columnDefinition = "varchar(30) not null unique")
     private String username;
 
+    // user name like Ahmed Ali
+    @NotEmpty(message = "username must be filled")
+    @Pattern(regexp = "^[A-Za-z]{3,20}( [A-Za-z]{3,20})+$",
+            message = "fullName must contain only letters and a space between first and last name")
+    @Column(columnDefinition = "varchar(40) not null unique")
+    private String fullName;
+
     @NotEmpty(message = "password must be filled")
     @Column(columnDefinition = "varchar(255) not null")
     private String password;

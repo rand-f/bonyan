@@ -36,6 +36,7 @@ public class ProjectManagerService {
         user.setPassword(managerDTO.getPassword());
         user.setEmail(managerDTO.getEmail());
         user.setPhoneNumber(managerDTO.getPhoneNumber());
+        user.setFullName(managerDTO.getFullName());
         user.setRole("SPECIALIST");
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
