@@ -20,10 +20,10 @@ public class ReviewController {
         return ResponseEntity.status(200).body(reviewService.get());
     }
 
-    @PostMapping("/add/{customerId}/")
-    public ResponseEntity<?> add(@PathVariable Integer customerId, @RequestBody @Valid Review review) {
+    @PostMapping("/add/{customerId}/{spec_id}")
+    public ResponseEntity<?> add(@PathVariable Integer customerId,@PathVariable Integer spec_id, @RequestBody @Valid Review review) {
 
-        reviewService.add(customerId, review);
+        reviewService.add(customerId, review,spec_id);
         return ResponseEntity.status(200).body(new ApiResponse("Review added"));
     }
 
@@ -37,6 +37,18 @@ public class ReviewController {
     @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(reviewService.getReviewById(id));
+    }
+
+    // for any one
+    @GetMapping("/get-by-specialist/{spec_id}")
+    public ResponseEntity<?> getBySpecialist(@PathVariable Integer spec_id) {
+        return ResponseEntity.status(200).body(reviewService.getSpecialistReviews(spec_id));
+    }
+
+    // only customer
+    @GetMapping("/get-by-customer/{customer_id}")
+    public ResponseEntity<?> getByCustomer(@PathVariable Integer customer_id) {
+        return ResponseEntity.status(200).body(reviewService.getReviewsByCustomer(customer_id));
     }
 
 }

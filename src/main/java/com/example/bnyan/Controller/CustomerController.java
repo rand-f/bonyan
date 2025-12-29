@@ -1,6 +1,7 @@
 package com.example.bnyan.Controller;
 
 //import com.example.bnyan.DTO.QuestionDTO;
+import com.example.bnyan.DTO.QuestionDTO;
 import com.example.bnyan.Service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,23 @@ public class CustomerController {
         return ResponseEntity.status(200).body(customerService.getCustomerById(id));
     }
 
-//    @PostMapping("/ask-ai")
-//    public ResponseEntity<?> askAI(@RequestBody QuestionDTO questionDTO){
-//        return ResponseEntity.ok(customerService.askAI(questionDTO.getQuestion()));
-//    }
+    @PostMapping("/ask-ai")
+    public ResponseEntity<?> askAI(@RequestBody QuestionDTO questionDTO){
+        return ResponseEntity.ok(customerService.askAI(questionDTO.getQuestion()));
+    }
+
+    @GetMapping("/get-properties/{id}")
+    public ResponseEntity<?> getCustomerProperties(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(customerService.getMyProperties(id));
+    }
+
+    @GetMapping("/on-going-projects/{id}")
+    public ResponseEntity<?> getCustomerOnGoingProjects(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(customerService.onGoingProjects(id));
+    }
+
+    @GetMapping("/completed-projects/{id}")
+    public ResponseEntity<?> getCustomerCompletedProjects(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(customerService.completedProjects(id));
+    }
 }

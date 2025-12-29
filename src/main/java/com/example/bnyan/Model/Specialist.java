@@ -23,6 +23,7 @@ public class Specialist {
     @Column(columnDefinition = "varchar(50) not null")
     private String speciality;
 
+
     //--------------------------------- relations ------------------------------
 
     @ManyToMany(mappedBy = "specialists")

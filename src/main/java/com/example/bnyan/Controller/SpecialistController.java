@@ -58,4 +58,39 @@ public class SpecialistController {
         specialistService.deleteSpecialist(id);
         return ResponseEntity.ok(new ApiResponse("specialist deleted successfully"));
     }
+
+    @GetMapping("/get/arch-eng")
+    public ResponseEntity<?> getARCHITECTURAL_ENGINEER() {
+        return ResponseEntity.ok(specialistService.getARCHITECTURAL_ENGINEER());
+    }
+    @GetMapping("/get/civil-eng")
+    public ResponseEntity<?> getCIVIL_ENGINEER() {
+        return ResponseEntity.ok(specialistService.getCIVIL_ENGINEER());
+    }
+    @GetMapping("/get/designer")
+    public ResponseEntity<?> getDESIGNER() {
+        return ResponseEntity.ok(specialistService.getDESIGNER());
+    }
+    @GetMapping("/get/elect-eng")
+    public ResponseEntity<?> getELECTRICAL_ENGINEER() {
+        return ResponseEntity.ok(specialistService.getELECTRICAL_ENGINEER());
+    }
+    @GetMapping("/get/gen-cont")
+    public ResponseEntity<?> getGENERAL_CONTRACTOR() {
+        return ResponseEntity.ok(specialistService.getGENERAL_CONTRACTOR());
+    }
+    @GetMapping("/get/mech-eng")
+    public ResponseEntity<?> getMECHANICAL_ENGINEER() {
+        return ResponseEntity.ok(specialistService.getMECHANICAL_ENGINEER());
+    }
+    @GetMapping("/get/project-manager")
+    public ResponseEntity<?> getPROJECT_MANAGER() {
+        return ResponseEntity.ok(specialistService.getPROJECT_MANAGER());
+    }
+
+    @GetMapping("/requests/{spec_id}")
+    public ResponseEntity<?> getMyRequests(@PathVariable Integer spec_id) {
+        return ResponseEntity.ok(specialistService.getMyRequests(spec_id));
+    }
+
 }

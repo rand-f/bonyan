@@ -26,7 +26,7 @@ public class ProjectController {
     }
 
     @GetMapping("/get-my-projects{customer_id}")
-    public ResponseEntity<?> getAll(@PathVariable Integer customer_id) {
+    public ResponseEntity<?> getMyProjects(@PathVariable Integer customer_id) {
         return ResponseEntity.ok(projectService.getMyProjects(customer_id));
     }
 
@@ -69,5 +69,10 @@ public class ProjectController {
                         "inline; filename=\"draft-building.jpeg\"")
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(image);
+    }
+
+    @GetMapping("/working-on-project/{project_id}")
+    public ResponseEntity<?> getWorkingOnProject(@PathVariable Integer project_id) {
+        return ResponseEntity.ok(projectService.workingOnTheProject(project_id));
     }
 }

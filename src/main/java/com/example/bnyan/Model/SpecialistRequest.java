@@ -32,7 +32,7 @@ public class SpecialistRequest {
     @Positive(message = "offered price must be a positive value")
     private Double offeredPrice;
 
-    @Pattern(regexp = "^(pending|excepted|rejected)$",message = "status must be: pending, excepted, or rejected")
+    @Pattern(regexp = "^(pending|accepted|rejected)$",message = "status must be: pending, excepted, or rejected")
     private String status;
 
 

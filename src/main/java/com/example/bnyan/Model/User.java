@@ -28,6 +28,8 @@ public class User {
     @Column(columnDefinition = "varchar(255) not null")
     private String password;
 
+    private String fullName;
+
     @NotEmpty(message = "email must be filled")
     @Email(message = "email must be valid")
     @Column(columnDefinition = "varchar(50) not null unique")

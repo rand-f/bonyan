@@ -15,4 +15,5 @@ public interface LandRepository extends JpaRepository<Land, Integer> {
     @Query("select l from Land l where l.customer.id = ?1")
     List<Land> getLandsByCustomerId(Integer customerId);
 
+
 }

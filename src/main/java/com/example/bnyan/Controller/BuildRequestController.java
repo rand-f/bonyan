@@ -60,4 +60,11 @@ public class BuildRequestController {
     public ResponseEntity<?> getByLandId(@PathVariable Integer landId) {
         return ResponseEntity.status(200).body(buildRequestService.getBuildRequestsByLandId(landId));
     }
+
+    @PutMapping("/approve/{requestId}")
+    public ResponseEntity<?> approveRequest(@PathVariable Integer requestId) {
+
+        buildRequestService.approveRequest(requestId);
+        return ResponseEntity.status(200).body(new ApiResponse("Build request is approved"));
+    }
 }
