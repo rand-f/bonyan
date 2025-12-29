@@ -63,6 +63,23 @@ public class Configuration {
                                                 "/api/v1/user-request/reject/**"
                                         ).hasAnyAuthority("SPECIALIST", "ADMIN")
 
+                                // CUSTOMER
+                                .requestMatchers(
+                                        "/api/v1/customer/get-by-id",
+                                        "/api/v1/customer/get-properties",
+                                        "/api/v1/customer/on-going-projects",
+                                        "/api/v1/customer/completed-projects",
+                                        "/api/v1/customer/ask-ai"
+                                ).hasAuthority("USER")
+
+                                //Meeting
+                                .requestMatchers("/api/v1/meeting/add").hasAuthority("USER")
+
+                                .requestMatchers("/api/v1/meeting/get",
+                                        "/api/v1/meeting/project/**",
+                                        "/api/v1/meeting/delete/**").hasAuthority("ADMIN")
+
+                                .anyRequest().authenticated()
                         )
 
                                 .logout(logout -> logout.logoutUrl("/api/v1/user/logout").deleteCookies("JSESSIONID").invalidateHttpSession(true))

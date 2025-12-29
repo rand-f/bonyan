@@ -41,16 +41,13 @@ public class MeetingService {
             throw new ApiException("project not found");
         }
 
-        // 1. Create Zoom meeting
         String zoomLink = createZoomMeeting(meeting);
 
-        // 2. Save meeting
         meeting.setLink(zoomLink);
         meeting.setProject(project);
         meeting.setCreatedAt(LocalDateTime.now());
         meetingRepository.save(meeting);
 
-        // 3. Notify each specialist (old webhook style)
         for (Specialist specialist : project.getSpecialists()) {
 
             sendMeetingEmail(
