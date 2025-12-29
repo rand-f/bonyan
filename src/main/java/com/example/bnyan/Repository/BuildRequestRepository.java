@@ -12,13 +12,12 @@ public interface BuildRequestRepository extends JpaRepository<BuildRequest, Inte
 
     BuildRequest getBuildRequestById(Integer id);
 
-    @Query("select br from BuildRequest br where br.status = ?1")
+    BuildRequest getBuildRequestByLandId(Integer landId);
+
     List<BuildRequest> getBuildRequestsByStatus(String status);
 
-    @Query("select br from BuildRequest br where br.customer.id = ?1")
     List<BuildRequest> getBuildRequestsByCustomerId(Integer customerId);
 
-    @Query("select br from BuildRequest br where br.land.id = ?1")
     List<BuildRequest> getBuildRequestsByLandId(Integer landId);
 
 }

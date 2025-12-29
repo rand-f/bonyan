@@ -37,6 +37,7 @@ public class UserService {
         user.setPassword(customerDTO.getPassword());
         user.setEmail(customerDTO.getEmail());
         user.setPhoneNumber(customerDTO.getPhoneNumber());
+        user.setFullName(customerDTO.getFullName());
         user.setRole("USER");
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);

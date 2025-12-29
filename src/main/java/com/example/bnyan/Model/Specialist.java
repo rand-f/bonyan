@@ -16,12 +16,19 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 public class Specialist {
+
     @Id
     private Integer id;
 
     @Pattern(regexp = "^(ARCHITECTURAL_ENGINEER|MECHANICAL_ENGINEER|ELECTRICAL_ENGINEER|CIVIL_ENGINEER|PROJECT_MANAGER|DESIGNER|GENERAL_CONTRACTOR)$",message = "specialty must be: ARCHITECTURAL_ENGINEER, MECHANICAL_ENGINEER, ELECTRICAL_ENGINEER, CIVIL_ENGINEER, PROJECT_MANAGER|DESIGNER or GENERAL_CONTRACTOR")
     @Column(columnDefinition = "varchar(50) not null")
     private String speciality;
+
+    // payment details
+    @Column(columnDefinition = "VARCHAR(100) UNIQUE")
+    private String stripeAccountId;
+
+    private Boolean verified;
 
     //--------------------------------- relations ------------------------------
 
