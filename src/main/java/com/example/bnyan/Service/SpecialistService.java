@@ -39,6 +39,7 @@ public class SpecialistService {
         user.setPassword(specialistDTO.getPassword());
         user.setEmail(specialistDTO.getEmail());
         user.setPhoneNumber(specialistDTO.getPhoneNumber());
+        user.setFullName(specialistDTO.getFullName());
         user.setRole("SPECIALIST");
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);

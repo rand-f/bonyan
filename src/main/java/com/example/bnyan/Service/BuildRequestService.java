@@ -19,15 +19,20 @@ public class BuildRequestService {
     private final LandRepository landRepository;
     private final ProjectRepository projectRepository;
 
-    public List<BuildRequest> get() {
+    ///  Crud
+
+    public List<BuildRequest> getAllBuildRequests() {
+
         List<BuildRequest> buildRequests = buildRequestRepository.findAll();
         if (buildRequests.isEmpty()) {
             throw new ApiException("No build requests found");
         }
+
         return buildRequests;
     }
 
     public void add(Integer customerId, Integer landId, BuildRequest buildRequest) {
+
         Customer customer = customerRepository.getCustomerById(customerId);
         if (customer == null) {
             throw new ApiException("Customer not found");
@@ -38,15 +43,23 @@ public class BuildRequestService {
             throw new ApiException("Land not found");
         }
 
+        BuildRequest existing =
+                buildRequestRepository.getBuildRequestByLandId(landId);
+
+        if (existing != null) {
+            throw new ApiException("Build request already exists for this land");
+        }
+
         buildRequest.setCustomer(customer);
         buildRequest.setLand(land);
-        buildRequest.setStatus("processing");
+        buildRequest.setStatus("PROCESSING");
         buildRequest.setCreatedAt(LocalDateTime.now());
 
         buildRequestRepository.save(buildRequest);
     }
 
     public void updateStatus(Integer requestId, Integer adminId, String status) {
+
         User admin = userRepository.getUserById(adminId);
         if (admin == null) {
             throw new ApiException("User not found");
@@ -56,22 +69,33 @@ public class BuildRequestService {
             throw new ApiException("Only ADMIN can update build request status");
         }
 
-        BuildRequest buildRequest = buildRequestRepository.getBuildRequestById(requestId);
+        if (!status.equalsIgnoreCase("PROCESSING")
+                && !status.equalsIgnoreCase("APPROVED")
+                && !status.equalsIgnoreCase("REJECTED")) {
+            throw new ApiException("Invalid status");
+        }
+
+        BuildRequest buildRequest =
+                buildRequestRepository.getBuildRequestById(requestId);
+
         if (buildRequest == null) {
             throw new ApiException("Build request not found");
         }
 
-        buildRequest.setStatus(status);
+        buildRequest.setStatus(status.toUpperCase());
         buildRequestRepository.save(buildRequest);
     }
 
     public void delete(Integer requestId, Integer customerId) {
+
         Customer customer = customerRepository.getCustomerById(customerId);
         if (customer == null) {
             throw new ApiException("Customer not found");
         }
 
-        BuildRequest buildRequest = buildRequestRepository.getBuildRequestById(requestId);
+        BuildRequest buildRequest =
+                buildRequestRepository.getBuildRequestById(requestId);
+
         if (buildRequest == null) {
             throw new ApiException("Build request not found");
         }
@@ -95,7 +119,10 @@ public class BuildRequestService {
     }
 
     public List<BuildRequest> getBuildRequestsByStatus(String status) {
-        List<BuildRequest> buildRequests = buildRequestRepository.getBuildRequestsByStatus(status);
+
+        List<BuildRequest> buildRequests =
+                buildRequestRepository.getBuildRequestsByStatus(status.toUpperCase());
+
         if (buildRequests.isEmpty()) {
             throw new ApiException("No build requests with status " + status + " found");
         }
@@ -104,24 +131,31 @@ public class BuildRequestService {
     }
 
     public List<BuildRequest> getBuildRequestsByCustomerId(Integer customerId) {
+
         Customer customer = customerRepository.getCustomerById(customerId);
         if (customer == null) {
             throw new ApiException("Customer not found");
         }
 
-        List<BuildRequest> buildRequests = buildRequestRepository.getBuildRequestsByCustomerId(customerId);
+        List<BuildRequest> buildRequests =
+                buildRequestRepository.getBuildRequestsByCustomerId(customerId);
+
         if (buildRequests.isEmpty()) {
             throw new ApiException("No build requests found for this customer");
         }
+
         return buildRequests;
     }
 
     public List<BuildRequest> getBuildRequestsByLandId(Integer landId) {
+
         Land land = landRepository.getLandById(landId);
         if (land == null) {
             throw new ApiException("Land not found");
         }
-        List<BuildRequest> buildRequests = buildRequestRepository.getBuildRequestsByLandId(landId);
+
+        List<BuildRequest> buildRequests =
+                buildRequestRepository.getBuildRequestsByLandId(landId);
 
         if (buildRequests.isEmpty()) {
             throw new ApiException("No build requests found for this land");
@@ -151,6 +185,10 @@ public class BuildRequestService {
         Project project = projectRepository.findProjectById(buildRequest.getProject().getId());
         Land land = landRepository.getLandById(buildRequest.getLand().getId());
 
+        // why not :
+//        Project project = buildRequest.getProject();
+//        Land land = buildRequest.getLand();
+
         if(project==null||land==null){
             throw new ApiException("can not complete this process because the project or land not found");
         }
@@ -163,5 +201,7 @@ public class BuildRequestService {
         landRepository.save(land);
         buildRequestRepository.save(buildRequest);
     }
+
+
 
 }

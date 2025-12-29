@@ -1,6 +1,5 @@
 package com.example.bnyan.Controller;
 
-//import com.example.bnyan.DTO.QuestionDTO;
 import com.example.bnyan.DTO.QuestionDTO;
 import com.example.bnyan.Service.CustomerService;
 import lombok.RequiredArgsConstructor;

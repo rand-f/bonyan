@@ -15,9 +15,12 @@ public class LandController {
 
     private final LandService landService;
 
+    /// CRUD endpoints
+
     @GetMapping("/get")
-    public ResponseEntity<?> get() {
-        return ResponseEntity.status(200).body(landService.get());
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.status(200)
+                .body(landService.getAllLands());
     }
 
     @PostMapping("/add/{customerId}")
@@ -34,19 +37,23 @@ public class LandController {
         return ResponseEntity.status(200).body(new ApiResponse("Land updated"));
     }
 
+
     @DeleteMapping("/delete/{landId}/{customerId}")
     public ResponseEntity<?> delete(@PathVariable Integer landId, @PathVariable Integer customerId) {
+
         landService.delete(landId, customerId);
         return ResponseEntity.status(200).body(new ApiResponse("Land deleted"));
+    }
+
+    /// Extra endpoints
+
+    @GetMapping("/get-by-customer-id/{customerId}")
+    public ResponseEntity<?> getByCustomerId(@PathVariable Integer customerId) {
+        return ResponseEntity.status(200).body(landService.getLandsByCustomer(customerId));
     }
 
     @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(landService.getLandById(id));
-    }
-
-    @GetMapping("/get-by-customer-id/{customerId}")
-    public ResponseEntity<?> getByCustomerId(@PathVariable Integer customerId) {
-        return ResponseEntity.status(200).body(landService.getLandsByCustomerId(customerId));
     }
 }

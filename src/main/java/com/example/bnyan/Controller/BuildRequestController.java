@@ -15,9 +15,11 @@ public class BuildRequestController {
 
     private final BuildRequestService buildRequestService;
 
+    /// CRUD endpoints
+
     @GetMapping("/get")
-    public ResponseEntity<?> get() {
-        return ResponseEntity.status(200).body(buildRequestService.get());
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.status(200).body(buildRequestService.getAllBuildRequests());
     }
 
     @PostMapping("/add/{customerId}/{landId}")
@@ -41,6 +43,9 @@ public class BuildRequestController {
         return ResponseEntity.status(200).body(new ApiResponse("Build request deleted"));
     }
 
+
+    /// Extra endpoints (logic)
+
     @GetMapping("/get-by-id/{id}")
     public ResponseEntity<?> getById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(buildRequestService.getBuildRequestById(id));
@@ -61,6 +66,7 @@ public class BuildRequestController {
         return ResponseEntity.status(200).body(buildRequestService.getBuildRequestsByLandId(landId));
     }
 
+    // for admin
     @PutMapping("/approve/{requestId}")
     public ResponseEntity<?> approveRequest(@PathVariable Integer requestId) {
 

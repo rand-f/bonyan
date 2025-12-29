@@ -16,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 public class Specialist {
+
     @Id
     private Integer id;
 
@@ -23,6 +24,11 @@ public class Specialist {
     @Column(columnDefinition = "varchar(50) not null")
     private String speciality;
 
+    // payment details
+    @Column(columnDefinition = "VARCHAR(100) UNIQUE")
+    private String stripeAccountId;
+
+    private Boolean verified;
 
     //--------------------------------- relations ------------------------------
 
