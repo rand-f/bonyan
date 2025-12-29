@@ -59,4 +59,17 @@ public class ReviewController {
     public ResponseEntity<?> getById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(reviewService.getReviewById(id));
     }
+
+    // for any one
+    @GetMapping("/get-by-specialist/{spec_id}")
+    public ResponseEntity<?> getBySpecialist(@PathVariable Integer spec_id) {
+        return ResponseEntity.status(200).body(reviewService.getSpecialistReviews(spec_id));
+    }
+
+    // only customer
+    @GetMapping("/get-by-customer/{customer_id}")
+    public ResponseEntity<?> getByCustomer(@PathVariable Integer customer_id) {
+        return ResponseEntity.status(200).body(reviewService.getReviewsByCustomer(customer_id));
+    }
+
 }

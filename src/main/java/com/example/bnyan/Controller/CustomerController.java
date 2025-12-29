@@ -27,4 +27,19 @@ public class CustomerController {
     public ResponseEntity<?> askAI(@RequestBody QuestionDTO questionDTO){
         return ResponseEntity.ok(customerService.askAI(questionDTO.getQuestion()));
     }
+
+    @GetMapping("/get-properties/{id}")
+    public ResponseEntity<?> getCustomerProperties(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(customerService.getMyProperties(id));
+    }
+
+    @GetMapping("/on-going-projects/{id}")
+    public ResponseEntity<?> getCustomerOnGoingProjects(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(customerService.onGoingProjects(id));
+    }
+
+    @GetMapping("/completed-projects/{id}")
+    public ResponseEntity<?> getCustomerCompletedProjects(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(customerService.completedProjects(id));
+    }
 }

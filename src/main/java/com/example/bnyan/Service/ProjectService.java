@@ -5,19 +5,19 @@ import com.example.bnyan.DTO.PredictionBudgetDTO;
 import com.example.bnyan.DTO.PredictionTimeDTO;
 import com.example.bnyan.DTO.ProjectAIDTO;
 import com.example.bnyan.DTO.ProjectDTO;
-import com.example.bnyan.Model.BuildRequest;
-import com.example.bnyan.Model.Customer;
-import com.example.bnyan.Model.Project;
+import com.example.bnyan.Model.*;
 import com.example.bnyan.OpenAI.AiService;
 import com.example.bnyan.Repository.BuildRequestRepository;
 import com.example.bnyan.Repository.CustomerRepository;
 import com.example.bnyan.Repository.ProjectRepository;
+import com.example.bnyan.Repository.UserRepository;
 import com.example.bnyan.Stability.ImageGenerationService;
 import com.example.bnyan.Stability.PromptBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +30,7 @@ public class ProjectService {
     private final PromptBuilder promptBuilder;
     private final ImageGenerationService imageGenerationService;
     private final AiService aiService;
+    private final UserRepository userRepository;
 
     //only for admin
     public List<Project> getAll() {
@@ -99,6 +100,7 @@ public class ProjectService {
         project.setDescription(projectDTO.getDescription());
         project.setStartDate(projectDTO.getStartDate());
 
+        project.setStatus("preparing");
         project.setCustomer(customer);
         project.setCreated_at(LocalDateTime.now());
         projectRepository.save(project);
@@ -151,5 +153,35 @@ public class ProjectService {
         String prompt = promptBuilder.generateImagePrompt(project.getDescription());
         byte[] image= imageGenerationService.generateDraftBuilding(prompt);
         return image;
+    }
+
+    public ArrayList workingOnTheProject(//Integer using_id,
+                                         Integer project_id){
+//        User user = userRepository.getUserById(using_id);
+//        if (user==null){
+//            throw new ApiException("user not found");
+//        }
+
+        Project project = projectRepository.findProjectById(project_id);
+        if (project==null){
+            throw new ApiException("project not found");
+        }
+
+//        if(project.getCustomer().getId()!=user.getId()){
+//            throw new ApiException("unauthorized");
+//        }
+
+        if(project.getSpecialists().isEmpty()&&project.getProjectManager()==null){
+            throw new ApiException("no one working on the project yet");
+        }
+
+        ArrayList workers= new ArrayList<>();
+
+        for(Specialist specialist:project.getSpecialists()){
+            workers.add(specialist);
+        }
+        workers.add(project.getProjectManager());
+
+        return workers;
     }
 }

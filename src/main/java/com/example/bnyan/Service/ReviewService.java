@@ -2,9 +2,11 @@ package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.Model.Customer;
+import com.example.bnyan.Model.Project;
 import com.example.bnyan.Model.Review;
 import com.example.bnyan.Model.Specialist;
 import com.example.bnyan.Repository.CustomerRepository;
+import com.example.bnyan.Repository.ProjectRepository;
 import com.example.bnyan.Repository.ReviewRepository;
 import com.example.bnyan.Repository.SpecialistRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final CustomerRepository customerRepository;
     private final SpecialistRepository specialistRepository;
+    private final ProjectRepository projectRepository;
 
     ///  Crud
 
@@ -38,11 +41,27 @@ public class ReviewService {
             throw new ApiException("Customer not found");
         }
 
-        Specialist specialist = specialistRepository.getSpecialistById(specialistId);
+        Specialist specialist = specialistRepository.findSpecialistById(spec_id);
         if (specialist == null) {
             throw new ApiException("Specialist not found");
         }
 
+        Boolean workedWith = false;
+
+        List<Project>myProjects=projectRepository.findProjectsByCustomer(customer);
+        for(Project project:myProjects){
+            for (Specialist special:project.getSpecialists()){
+                if(special==specialist){
+                    workedWith=true;
+                }
+            }
+        }
+
+        if(!workedWith){
+            throw new ApiException("you can not review a specialist you did not work with");
+        }
+
+        review.setSpecialist(specialist);
         Review existing =
                 reviewRepository.getReviewByCustomerIdAndSpecialistId(customerId, specialistId);
 
@@ -130,6 +149,21 @@ public class ReviewService {
         return review;
     }
 
+    public List<Review>getSpecialistReviews(Integer spec_id){
+        Specialist specialist = specialistRepository.findSpecialistById(spec_id);
+        if (specialist == null) {
+            throw new ApiException("Specialist not found");
+        }
+        return reviewRepository.findReviewsBySpecialist(specialist);
+    }
+
+    public List<Review>getReviewsByCustomer(Integer customer_id){
+        Customer customer = customerRepository.getCustomerById(customer_id);
+        if (customer == null) {
+            throw new ApiException("Customer not found");
+        }
+        return reviewRepository.findReviewsByCustomer(customer);
+    }
 
 
 }

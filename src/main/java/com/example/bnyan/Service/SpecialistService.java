@@ -112,4 +112,40 @@ public class SpecialistService {
         }
         specialistRepository.delete(specialist);
     }
+
+    public List<Specialist>getARCHITECTURAL_ENGINEER(){
+        return specialistRepository.findSpecialistBySpeciality("ARCHITECTURAL_ENGINEER");
+    }
+    public List<Specialist>getMECHANICAL_ENGINEER(){
+        return specialistRepository.findSpecialistBySpeciality("MECHANICAL_ENGINEER");
+    }
+    public List<Specialist>getELECTRICAL_ENGINEER(){
+        return specialistRepository.findSpecialistBySpeciality("ELECTRICAL_ENGINEER");
+    }
+    public List<Specialist>getCIVIL_ENGINEER(){
+        return specialistRepository.findSpecialistBySpeciality("CIVIL_ENGINEER");
+    }
+    public List<Specialist>getPROJECT_MANAGER(){
+        return specialistRepository.findSpecialistBySpeciality("PROJECT_MANAGER");
+    }
+    public List<Specialist>getDESIGNER(){
+        return specialistRepository.findSpecialistBySpeciality("DESIGNER");
+    }
+    public List<Specialist>getGENERAL_CONTRACTOR(){
+        return specialistRepository.findSpecialistBySpeciality("GENERAL_CONTRACTOR");
+    }
+
+    public List<SpecialistRequest>getMyRequests(Integer spec_id){
+        Specialist specialist = specialistRepository.findSpecialistById(spec_id);
+        if(specialist==null){
+            throw new ApiException("specialist not found");
+        }
+
+        List<SpecialistRequest> myRequests= specialistRequestRepository.findSpecialistRequestBySpecialist(specialist);
+        if(myRequests.isEmpty()){
+            throw new ApiException("you have no requests");
+        }
+        
+        return myRequests;
+    }
 }

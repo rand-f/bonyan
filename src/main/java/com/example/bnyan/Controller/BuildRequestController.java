@@ -71,6 +71,6 @@ public class BuildRequestController {
     public ResponseEntity<?> approveRequest(@PathVariable Integer requestId) {
 
         buildRequestService.approveRequest(requestId);
-        return ResponseEntity.status(200).body(new ApiResponse("Build request approved and project linked to land"));
+        return ResponseEntity.status(200).body(new ApiResponse("Build request is approved"));
     }
 }

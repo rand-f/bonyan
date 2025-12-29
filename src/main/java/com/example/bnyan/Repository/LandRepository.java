@@ -14,4 +14,5 @@ public interface LandRepository extends JpaRepository<Land, Integer> {
 
     List<Land> getLandsByCustomerId(Integer customerId);
 
+
 }

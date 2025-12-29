@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +40,9 @@ public class Project {
 
     @Positive(message = "duration must be a positive value")
     private Integer duration;
+
+    @Pattern(regexp = "^(preparing|on going|completed)")
+    private String status;
 
     @NotNull(message = "expected end date is required")
     private LocalDate expectedEndDate;

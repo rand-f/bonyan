@@ -39,6 +39,7 @@ public class LandService {
 
         land.setCustomer(customer);
         land.setCreatedAt(LocalDateTime.now());
+        land.setAuthorizationStatus(false);
 
         landRepository.save(land);
     }
