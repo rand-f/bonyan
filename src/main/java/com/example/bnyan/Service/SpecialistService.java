@@ -3,10 +3,7 @@ package com.example.bnyan.Service;
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.DTO.SpecialistDTO;
 import com.example.bnyan.Model.*;
-import com.example.bnyan.Repository.DomainRepository;
-import com.example.bnyan.Repository.SpecialistRepository;
-import com.example.bnyan.Repository.SpecialistRequestRepository;
-import com.example.bnyan.Repository.UserRepository;
+import com.example.bnyan.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +20,7 @@ public class SpecialistService {
     private final UserRepository userRepository;
     private final SpecialistRequestRepository specialistRequestRepository;
     private final SpecialistRequestService specialistRequestService;
+    private final ProjectManagerRepository projectManagerRepository;
 
     public List<Specialist> getAll() {
         return specialistRepository.findAll();
@@ -49,6 +47,12 @@ public class SpecialistService {
         Specialist specialist = new Specialist();
         specialist.setSpeciality(specialistDTO.getSpeciality());
         specialist.setUser(user);
+        if(specialistDTO.getSpeciality().equals("PROJECT_MANAGER")){
+            ProjectManager manager = new ProjectManager();
+            manager.setUser(user);
+            manager.setSpeciality(specialist.getSpeciality());
+            projectManagerRepository.save(manager);
+        }
         specialistRepository.save(specialist);
     }
 

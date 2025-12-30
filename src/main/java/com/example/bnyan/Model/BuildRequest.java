@@ -22,7 +22,7 @@ public class BuildRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotEmpty(message = "status must be filled")
+    //@NotEmpty(message = "status must be filled")
     @Pattern(regexp = "^(approved|rejected|processing)$", message = "status must be approved or rejected or processing")
     @Column(columnDefinition = "varchar(20) not null")
     private String status;
@@ -38,7 +38,7 @@ public class BuildRequest {
     @JsonIgnore
     private Land land;
 
-    @OneToOne(cascade = CascadeType.ALL,mappedBy = "buildRequest")
+    @OneToOne
     private Project project;
 
 }

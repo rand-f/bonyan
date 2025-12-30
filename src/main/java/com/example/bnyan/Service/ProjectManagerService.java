@@ -1,11 +1,13 @@
 package com.example.bnyan.Service;
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.DTO.ProjectManagerDTO;
+import com.example.bnyan.DTO.SpecialistDTO;
 import com.example.bnyan.Model.*;
 import com.example.bnyan.Repository.ProjectManagerRepository;
 import com.example.bnyan.Repository.SpecialistRequestRepository;
 import com.example.bnyan.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,24 +26,26 @@ public class ProjectManagerService {
     }
 
 
-    public void registerManager(ProjectManagerDTO managerDTO) {
-        if (userRepository.getUserByUsername(managerDTO.getUsername()) != null)
+    public void registerManager(SpecialistDTO specialistDTO) {
+        if (userRepository.getUserByUsername(specialistDTO.getUsername()) != null)
             throw new ApiException("Username already exists");
 
-        if (userRepository.getUserByEmail(managerDTO.getEmail()) != null)
+        if (userRepository.getUserByEmail(specialistDTO.getEmail()) != null)
             throw new ApiException("Email already exists");
 
         User user = new User();
-        user.setUsername(managerDTO.getUsername());
-        user.setPassword(managerDTO.getPassword());
-        user.setEmail(managerDTO.getEmail());
-        user.setPhoneNumber(managerDTO.getPhoneNumber());
-        user.setFullName(managerDTO.getFullName());
+        user.setUsername(specialistDTO.getUsername());
+        String hash = new BCryptPasswordEncoder().encode(specialistDTO.getPassword());
+        user.setPassword(hash);
+        user.setEmail(specialistDTO.getEmail());
+        user.setPhoneNumber(specialistDTO.getPhoneNumber());
+        user.setFullName(specialistDTO.getFullName());
         user.setRole("SPECIALIST");
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
         ProjectManager projectManager =new ProjectManager();
+        projectManager.setSpeciality("PROJECT_MANAGER");
         projectManager.setUser(user);
         projectManagerRepository.save(projectManager);
     }

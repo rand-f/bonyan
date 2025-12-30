@@ -1,6 +1,7 @@
 package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
+import com.example.bnyan.DTO.ProjectDTO;
 import com.example.bnyan.Model.*;
 import com.example.bnyan.Repository.*;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,9 @@ public class BuildRequestService {
         return buildRequests;
     }
 
-    public void add(User authUser, Integer landId, BuildRequest buildRequest) {
+    public void add(User authUser, Integer landId, ProjectDTO projectDTO) {
 
+        BuildRequest buildRequest = new BuildRequest();
         if (!authUser.getRole().equals("USER")) {
             throw new ApiException("Only customers can create build requests");
         }
@@ -57,9 +59,18 @@ public class BuildRequestService {
 
         buildRequest.setCustomer(customer);
         buildRequest.setLand(land);
-        buildRequest.setStatus("PROCESSING");
+        buildRequest.setStatus("processing");
         buildRequest.setCreatedAt(LocalDateTime.now());
 
+        Project project = new Project();
+        project.setDescription(projectDTO.getDescription());
+        project.setBudget(project.getBudget());
+        project.setDuration(project.getDuration());
+        project.setStartDate(projectDTO.getStartDate());
+        project.setCustomer(customer);
+        project.setBuildRequest(buildRequest);
+        buildRequest.setProject(project);
+        projectRepository.save(project);
         buildRequestRepository.save(buildRequest);
     }
 

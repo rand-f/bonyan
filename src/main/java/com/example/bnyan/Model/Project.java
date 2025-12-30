@@ -57,12 +57,10 @@ public class Project {
     private Set<Specialist> specialists;
 
     @ManyToOne
-    @MapsId
     @JsonIgnore
     private ProjectManager projectManager;
 
     @ManyToOne
-    @MapsId
     @JsonIgnore
     private Customer customer;
 
@@ -71,7 +69,6 @@ public class Project {
     private Set<SpecialistRequest>requests;
 
     @OneToOne
-    @MapsId
     @JsonIgnore
     private BuildRequest buildRequest;
 

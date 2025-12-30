@@ -1,8 +1,10 @@
 package com.example.bnyan.Controller;
 import com.example.bnyan.Api.ApiResponse;
 import com.example.bnyan.DTO.ProjectManagerDTO;
+import com.example.bnyan.DTO.SpecialistDTO;
 import com.example.bnyan.Model.User;
 import com.example.bnyan.Service.ProjectManagerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,8 +25,8 @@ public class ProjectManagerController {
 
     //everyone
     @PostMapping("/register")
-    public ResponseEntity<?> registerManager(@RequestBody ProjectManagerDTO managerDTO) {
-        projectManagerService.registerManager(managerDTO);
+    public ResponseEntity<?> registerManager(@RequestBody @Valid SpecialistDTO specialistDTO) {
+        projectManagerService.registerManager(specialistDTO);
         return ResponseEntity.ok(new ApiResponse("project manager registered successfully"));
     }
 

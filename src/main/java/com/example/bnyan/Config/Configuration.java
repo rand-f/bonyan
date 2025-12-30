@@ -24,7 +24,7 @@ public class Configuration {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                         .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/user/register-customer").permitAll()
                                             // ===== USER =====
-                                        .requestMatchers("/api/v1/user/register-customer","/api/v1/specialist/register","/api/v1/project-manager/register").permitAll()
+                                        .requestMatchers("/api/v1/customer/register-customer","/api/v1/specialist/register","/api/v1/project-manager/register").permitAll()
 
                                         .requestMatchers(
                                                 "/api/v1/user/get",
@@ -104,7 +104,6 @@ public class Configuration {
                                         "/api/v1/domain/add",
                                         "/api/v1/domain/update/{domain_id}",
                                         "/api/v1/domain/delete/{domain_id}",
-                                        "/api/v1/specialist/register",
                                         "/api/v1/specialist/assign-domain/{domain_id}",
                                         "/api/v1/specialist/accept-request/{request_id}",
                                         "/api/v1/specialist/reject-request/{request_id}",

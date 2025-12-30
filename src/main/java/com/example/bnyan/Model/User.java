@@ -66,6 +66,10 @@ public class User implements UserDetails {
     @PrimaryKeyJoinColumn
     private Specialist specialist;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ProjectManager projectManager;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

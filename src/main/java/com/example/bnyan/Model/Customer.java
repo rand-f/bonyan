@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -32,5 +33,8 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<BuildRequest> buildRequests;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Project>projects;
 
 }

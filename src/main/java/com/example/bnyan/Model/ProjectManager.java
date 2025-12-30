@@ -18,6 +18,9 @@ public class ProjectManager {
     @Id
     private Integer id;
 
+    @Column(columnDefinition = "varchar(50) not null")
+    private String speciality="PROJECT_MANAGER";
+
     //--------------------------------- relations ------------------------------
 
     @OneToOne
@@ -25,7 +28,7 @@ public class ProjectManager {
     @JsonIgnore
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "projectManager")
+    @OneToMany()
     private Set<Project> project;
 
     @OneToMany

@@ -1,6 +1,7 @@
 package com.example.bnyan.Controller;
 
 import com.example.bnyan.Api.ApiResponse;
+import com.example.bnyan.DTO.ProjectDTO;
 import com.example.bnyan.Model.BuildRequest;
 import com.example.bnyan.Model.User;
 import com.example.bnyan.Service.BuildRequestService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/build-request")
+@RequestMapping("/api/v1/build-request")
 @RequiredArgsConstructor
 public class BuildRequestController {
 
@@ -29,10 +30,9 @@ public class BuildRequestController {
     @PostMapping("/add/{landId}")
     public ResponseEntity<ApiResponse> add(
             @AuthenticationPrincipal User authUser,
-            @PathVariable Integer landId,
-            @RequestBody @Valid BuildRequest buildRequest) {
+            @PathVariable Integer landId, @RequestBody ProjectDTO projectDTO) {
 
-        buildRequestService.add(authUser, landId, buildRequest);
+        buildRequestService.add(authUser, landId, projectDTO);
         return ResponseEntity.ok(new ApiResponse("Build request added"));
     }
 
