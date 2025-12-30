@@ -43,9 +43,9 @@ public class ProjectManagerController {
     }
 
     //admin
-    @DeleteMapping("/delete/{request_id}")
-    public ResponseEntity<?> deleteManager(@PathVariable Integer request_id) {
-        projectManagerService.deleteProjectManager(request_id);
+    @DeleteMapping("/delete/{manager_id}")
+    public ResponseEntity<?> deleteManager(@PathVariable Integer manager_id) {
+        projectManagerService.deleteProjectManager(manager_id);
         return ResponseEntity.ok(new ApiResponse("project manager deleted successfully"));
     }
 }

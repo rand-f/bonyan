@@ -3,6 +3,7 @@ import com.example.bnyan.DTO.SpecialistDTO;
 import com.example.bnyan.Model.Specialist;
 import com.example.bnyan.Model.User;
 import com.example.bnyan.Service.SpecialistService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,7 @@ public class SpecialistController {
 
     //everyone
     @PostMapping("/register")
-    public ResponseEntity<?> registerSpecialist(@RequestBody SpecialistDTO specialistDTO) {
+    public ResponseEntity<?> registerSpecialist(@RequestBody @Valid SpecialistDTO specialistDTO) {
         specialistService.registerSpecialist( specialistDTO);
         return ResponseEntity.ok(new ApiResponse("specialist registered successfully"));
     }
@@ -61,9 +62,9 @@ public class SpecialistController {
     }
 
     // admin
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteSpecialist(@PathVariable Integer id) {
-        specialistService.deleteSpecialist(id);
+    @DeleteMapping("/delete/{specialist_id}")
+    public ResponseEntity<?> deleteSpecialist(@PathVariable Integer specialist_id) {
+        specialistService.deleteSpecialist(specialist_id);
         return ResponseEntity.ok(new ApiResponse("specialist deleted successfully"));
     }
 

@@ -24,14 +24,20 @@ public class Configuration {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                         .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/user/register-customer").permitAll()
                                             // ===== USER =====
-                                        .requestMatchers("/api/v1/user/register-customer").permitAll()
+                                        .requestMatchers("/api/v1/user/register-customer","/api/v1/specialist/register","/api/v1/project-manager/register").permitAll()
 
                                         .requestMatchers(
                                                 "/api/v1/user/get",
                                                 "/api/v1/user/delete/**",
                                                 "/api/v1/user/get-by-id/**",
                                                 "/api/v1/user/get-by-username/**",
-                                                "/api/v1/user/get-by-role/**"
+                                                "/api/v1/user/get-by-role/**",
+                                                "/api/v1/domain/get",
+                                                "/api/v1/specialist/get",
+                                                "/api/v1/specialist/delete/{specialist_id}",
+                                                "/api/v1/project/get",
+                                                "/api/v1/specialist-request/get",
+                                                "/api/v1/project-manager/delete/{manager_id}"
                                         ).hasAuthority("ADMIN")
 
                                         .requestMatchers("/api/v1/user/update")
@@ -42,7 +48,13 @@ public class Configuration {
                                                 "/api/v1/built/add",
                                                 "/api/v1/built/update/**",
                                                 "/api/v1/built/delete/**",
-                                                "/api/v1/built/get-my-builts"
+                                                "/api/v1/built/get-my-builts",
+                                                "/api/v1/specialist/get/arch-eng",
+                                                "/api/v1/specialist/get/civil-eng",
+                                                "/api/v1/specialist/get/designer",
+                                                "/api/v1/specialist/get/elect-eng",
+                                                "/api/v1/specialist/get/gen-cont",
+                                                "/api/v1/specialist/get/project-manager"
                                         ).hasAnyAuthority("USER", "SPECIALIST", "ADMIN")
 
                                         .requestMatchers(
@@ -60,7 +72,8 @@ public class Configuration {
 
                                         .requestMatchers(
                                                 "/api/v1/user-request/accept/**",
-                                                "/api/v1/user-request/reject/**"
+                                                "/api/v1/user-request/reject/**",
+                                                "/api/v1/specialist/update/{spec_id}"
                                         ).hasAnyAuthority("SPECIALIST", "ADMIN")
 
                                 // CUSTOMER
@@ -69,8 +82,40 @@ public class Configuration {
                                         "/api/v1/customer/get-properties",
                                         "/api/v1/customer/on-going-projects",
                                         "/api/v1/customer/completed-projects",
-                                        "/api/v1/customer/ask-ai"
+                                        "/api/v1/customer/ask-ai",
+                                        "/api/v1/project/get-my-projects",
+                                        "/api/v1/project/add/{request_id}",
+                                        "/api/v1/project/budget/{project_id}",
+                                        "/api/v1/project/time-prediction/{project_id}",
+                                        "/api/v1/project/update/{project_id}",
+                                        "/api/v1/project/delete/{project_id}",
+                                        "/api/v1/project/generate-image/{project_id}",
+                                        "/api/v1/specialist-request/add/{project_id}/{specialist_id}",
+                                        "/api/v1/specialist-request/add-specialist/{project_id}/{spec_id}",
+                                        "/api/v1/specialist-request/add-manager/{project_id}/{manager_id}",
+                                        "/api/v1/specialist-request/update/{request_id}",
+                                        "/api/v1/specialist-request/delete/{request_id}"
                                 ).hasAuthority("USER")
+
+                                .requestMatchers(
+                                        "/api/v1/domain/get-specialist",
+                                        "/api/v1/domain/add",
+                                        "/api/v1/domain/update/{domain_id}",
+                                        "/api/v1/domain/delete/{domain_id}",
+                                        "/api/v1/specialist/register",
+                                        "/api/v1/specialist/assign-domain/{domain_id}",
+                                        "/api/v1/specialist/accept-request/{request_id}",
+                                        "/api/v1/specialist/reject-request/{request_id}",
+                                        "/api/v1/specialist-request/reject/{request_id}",
+                                        "/api/v1/specialist-request/accept/{request_id}",
+                                        "/api/v1/project-manager/accept-request/{request_id}",
+                                        "/api/v1/project-manager/reject-request/{request_id}"
+                                ).hasAuthority("SPECIALIST")
+
+                                .requestMatchers(
+                                        "/api/v1/project/working-on-project/{project_id}",
+                                        "/api/v1/project-manager/get"
+                                ).hasAnyAuthority("USER", "ADMIN")
 
                                 //Meeting
                                 .requestMatchers("/api/v1/meeting/add").hasAuthority("USER")

@@ -21,32 +21,38 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    //admin
     @GetMapping("/get")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(projectService.getAll());
     }
 
+    //customer
     @GetMapping("/get-my-projects")
     public ResponseEntity<?> getMyProjects(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(projectService.getMyProjects(user.getId()));
     }
 
+    //customer
     @PostMapping("/add/{request_id}")
     public ResponseEntity<?> addProject(@AuthenticationPrincipal User user, @PathVariable Integer request_id,@RequestBody ProjectDTO project) {
         projectService.addProject(user.getId(), request_id, project);
         return ResponseEntity.ok(new ApiResponse("project added successfully"));
     }
 
-    @PostMapping("/budget")
-    public ResponseEntity<?> projectBudget(@AuthenticationPrincipal User user, @RequestBody ProjectAIDTO project) {
-        return ResponseEntity.ok(projectService.predictBudget(user.getId(), project));
+    //customer
+    @PostMapping("/budget/{project_id}")
+    public ResponseEntity<?> projectBudget(@AuthenticationPrincipal User user,@PathVariable Integer project_id, @RequestBody ProjectAIDTO project) {
+        return ResponseEntity.ok(projectService.predictBudget(user.getId(),project_id, project));
     }
 
-    @PostMapping("/time-prediction")
-    public ResponseEntity<?> projectTime(@AuthenticationPrincipal User user, @RequestBody ProjectAIDTO project) {
-        return ResponseEntity.ok(projectService.predictBudget(user.getId(), project));
+    //customer
+    @PostMapping("/time-prediction/{project_id}")
+    public ResponseEntity<?> projectTime(@AuthenticationPrincipal User user,@PathVariable Integer project_id, @RequestBody ProjectAIDTO project) {
+        return ResponseEntity.ok(projectService.predictBudget(user.getId(),project_id, project));
     }
 
+    //customer
     @PutMapping("/update/{project_id}")
     public ResponseEntity<?> updateProject(@AuthenticationPrincipal User user,@PathVariable Integer project_id,
                                            @RequestBody Project project) {
@@ -54,12 +60,14 @@ public class ProjectController {
         return ResponseEntity.ok(new ApiResponse("project updated successfully"));
     }
 
+    //customer
     @DeleteMapping("/delete/{project_id}")
     public ResponseEntity<?> deleteProject(@AuthenticationPrincipal User user, @PathVariable Integer project_id) {
         projectService.deleteProject(user.getId(),project_id);
         return ResponseEntity.ok(new ApiResponse("project deleted successfully"));
     }
 
+    //customer
     @PostMapping("/generate-image/{project_id}")
     public ResponseEntity<?> generateDraft(@AuthenticationPrincipal User user,@PathVariable Integer project_id) {
 
@@ -72,8 +80,10 @@ public class ProjectController {
                 .body(image);
     }
 
+    //customer + admin
     @GetMapping("/working-on-project/{project_id}")
     public ResponseEntity<?> getWorkingOnProject(@AuthenticationPrincipal User user,@PathVariable Integer project_id) {
         return ResponseEntity.ok(projectService.workingOnTheProject(user.getId(),project_id));
     }
+
 }
