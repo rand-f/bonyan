@@ -3,6 +3,7 @@ package com.example.bnyan.ServiceTest;
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.Model.Customer;
 import com.example.bnyan.Model.Land;
+import com.example.bnyan.Model.User;
 import com.example.bnyan.Repository.CustomerRepository;
 import com.example.bnyan.Repository.LandRepository;
 import com.example.bnyan.Service.LandService;
@@ -31,101 +32,142 @@ public class LandServiceTest {
     @Mock
     private CustomerRepository customerRepository;
 
-    private Land land1, land2;
+    private User adminUser;
+    private User customerUser;
     private Customer customer;
-    private List<Land> landList;
+    private Land land;
 
     @BeforeEach
     void setup() {
+        adminUser = new User();
+        adminUser.setId(1);
+        adminUser.setRole("ADMIN");
+
+        customerUser = new User();
+        customerUser.setId(2);
+        customerUser.setRole("USER");
+
         customer = new Customer();
-        customer.setId(1);
+        customer.setId(2);
 
-        land1 = new Land();
-        land1.setId(10);
-        land1.setLocation("Riyadh");
-        land1.setSize("500");
-        land1.setCustomer(customer);
-
-        land2 = new Land();
-        land2.setId(11);
-        land2.setLocation("Jeddah");
-        land2.setCustomer(customer);
-
-        landList = new ArrayList<>();
-        landList.add(land1);
-        landList.add(land2);
+        land = new Land();
+        land.setId(10);
+        land.setCustomer(customer);
     }
+
 
     @Test
     public void getAllLandsSuccessTest() {
-        when(landRepository.findAll()).thenReturn(landList);
+        List<Land> list = new ArrayList<>();
+        list.add(land);
+        when(landRepository.findAll()).thenReturn(list);
 
-        List<Land> result = landService.getAllLands();
+        List<Land> result = landService.getAllLands(adminUser);
 
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
         verify(landRepository, times(1)).findAll();
     }
 
     @Test
-    public void getAllLandsEmptyTest() {
-        when(landRepository.findAll()).thenReturn(new ArrayList<>());
-
-        assertThrows(ApiException.class, () -> {
-            landService.getAllLands();
-        });
+    public void getAllLandsUnauthorizedTest() {
+        assertThrows(ApiException.class, () -> landService.getAllLands(customerUser));
     }
+
 
     @Test
     public void addLandSuccessTest() {
-        when(customerRepository.getCustomerById(1)).thenReturn(customer);
+        when(customerRepository.getCustomerById(customerUser.getId())).thenReturn(customer);
 
-        landService.add(1, land1);
+        Land newLand = new Land();
+        landService.add(customerUser, newLand);
 
-        verify(customerRepository, times(1)).getCustomerById(1);
-        verify(landRepository, times(1)).save(land1);
-        assertNotNull(land1.getCreatedAt());
+        assertNotNull(newLand.getCustomer());
+        assertNotNull(newLand.getCreatedAt());
+        assertFalse(newLand.getAuthorizationStatus());
+        verify(landRepository, times(1)).save(newLand);
+    }
+
+    @Test
+    public void addLandUnauthorizedTest() {
+        assertThrows(ApiException.class, () -> landService.add(adminUser, new Land()));
+    }
+
+
+    @Test
+    public void updateLandSuccessTest() {
+        when(landRepository.getLandById(10)).thenReturn(land);
+
+        Land updated = new Land();
+        updated.setLocation("New Location");
+        updated.setSize("500.0");
+        updated.setAuthorizationStatus(true);
+
+        landService.update(customerUser, 10, updated);
+
+        assertEquals("New Location", land.getLocation());
+        assertEquals("500.0", land.getSize());
+        assertTrue(land.getAuthorizationStatus());
+        verify(landRepository, times(1)).save(land);
     }
 
     @Test
     public void updateLandUnauthorizedTest() {
-        Land existingLand = new Land();
-        Customer owner = new Customer();
-        owner.setId(99);
-        existingLand.setCustomer(owner);
+        when(landRepository.getLandById(10)).thenReturn(land);
+        User otherUser = new User();
+        otherUser.setId(3);
+        otherUser.setRole("USER");
 
-        when(landRepository.getLandById(10)).thenReturn(existingLand);
-
-        assertThrows(ApiException.class, () -> {
-            landService.update(10, 1, land1);
-        });
+        assertThrows(ApiException.class, () -> landService.update(otherUser, 10, new Land()));
     }
+
 
     @Test
     public void deleteLandSuccessTest() {
-        when(landRepository.getLandById(10)).thenReturn(land1);
+        when(landRepository.getLandById(10)).thenReturn(land);
 
-        landService.delete(10, 1);
+        landService.delete(customerUser, 10);
 
-        verify(landRepository, times(1)).delete(land1);
+        verify(landRepository, times(1)).delete(land);
     }
 
     @Test
-    public void getLandsByCustomerSuccessTest() {
-        when(customerRepository.getCustomerById(1)).thenReturn(customer);
-        when(landRepository.getLandsByCustomerId(1)).thenReturn(landList);
+    public void deleteLandUnauthorizedTest() {
+        when(landRepository.getLandById(10)).thenReturn(land);
+        User otherUser = new User();
+        otherUser.setId(3);
+        otherUser.setRole("USER");
 
-        List<Land> result = landService.getLandsByCustomer(1);
-
-        assertEquals(2, result.size());
-        verify(landRepository, times(1)).getLandsByCustomerId(1);
+        assertThrows(ApiException.class, () -> landService.delete(otherUser, 10));
     }
 
     @Test
-    public void getLandByIdNotFoundTest() {
-        when(landRepository.getLandById(99)).thenReturn(null);
+    public void getMyLandsSuccessTest() {
+        List<Land> list = new ArrayList<>();
+        list.add(land);
+        when(landRepository.getLandsByCustomerId(customerUser.getId())).thenReturn(list);
 
-        assertThrows(ApiException.class, () -> {
-            landService.getLandById(99);
-        });
+        List<Land> result = landService.getMyLands(customerUser);
+
+        assertEquals(1, result.size());
+    }
+
+
+    @Test
+    public void getLandByIdSuccessTest() {
+        when(landRepository.getLandById(10)).thenReturn(land);
+
+        Land result = landService.getLandById(customerUser, 10);
+
+        assertEquals(land, result);
+    }
+
+    @Test
+    public void getLandByIdUnauthorizedTest() {
+        when(landRepository.getLandById(10)).thenReturn(land);
+        User otherUser = new User();
+        otherUser.setId(3);
+        otherUser.setRole("USER");
+
+        assertThrows(ApiException.class, () -> landService.getLandById(otherUser, 10));
     }
 }

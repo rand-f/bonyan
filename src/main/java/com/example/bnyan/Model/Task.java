@@ -24,6 +24,10 @@ public class Task {
     @Column(columnDefinition = "varchar(100) not null")
     private String title;
 
+    @NotEmpty(message = "description must be filled")
+    @Column(columnDefinition = "text not null")
+    private String description;
+
     @NotEmpty(message = "status must be filled")
     @Pattern(regexp = "^(pending|inProgress|completed)$",
             message = "status must be pending or inProgress or completed")

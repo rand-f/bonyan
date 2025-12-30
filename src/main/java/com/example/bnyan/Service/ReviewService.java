@@ -2,9 +2,9 @@ package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.Model.Customer;
-import com.example.bnyan.Model.Project;
 import com.example.bnyan.Model.Review;
 import com.example.bnyan.Model.Specialist;
+import com.example.bnyan.Model.User;
 import com.example.bnyan.Repository.CustomerRepository;
 import com.example.bnyan.Repository.ProjectRepository;
 import com.example.bnyan.Repository.ReviewRepository;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -22,21 +23,22 @@ public class ReviewService {
     private final SpecialistRepository specialistRepository;
     private final ProjectRepository projectRepository;
 
-    ///  Crud
+    /// CRUD operations
 
     public List<Review> getAllReviews() {
-
         List<Review> reviews = reviewRepository.findAll();
         if (reviews.isEmpty()) {
             throw new ApiException("No reviews found");
         }
-
         return reviews;
     }
 
-    public void add(Integer customerId, Integer specialistId, Review review) {
+    public void add(User authUser, Integer specialistId, Review review) {
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can create reviews");
+        }
 
-        Customer customer = customerRepository.getCustomerById(customerId);
+        Customer customer = customerRepository.getCustomerById(authUser.getId());
         if (customer == null) {
             throw new ApiException("Customer not found");
         }
@@ -46,25 +48,18 @@ public class ReviewService {
             throw new ApiException("Specialist not found");
         }
 
-        Boolean workedWith = false;
+        // Verify the customer worked with the specialist
+        boolean workedWith = projectRepository.findProjectsByCustomer(customer)
+                .stream()
+                .flatMap(project -> project.getSpecialists().stream())
+                .anyMatch(specialist::equals);
 
-        List<Project>myProjects=projectRepository.findProjectsByCustomer(customer);
-        for(Project project:myProjects){
-            for (Specialist special:project.getSpecialists()){
-                if(special==specialist){
-                    workedWith=true;
-                }
-            }
+        if (!workedWith) {
+            throw new ApiException("You cannot review a specialist you did not work with");
         }
 
-        if(!workedWith){
-            throw new ApiException("you can not review a specialist you did not work with");
-        }
-
-        review.setSpecialist(specialist);
-        Review existing =
-                reviewRepository.getReviewByCustomerIdAndSpecialistId(customerId, specialistId);
-
+        // Check if a review already exists
+        Review existing = reviewRepository.getReviewByCustomerIdAndSpecialistId(customer.getId(), specialistId);
         if (existing != null) {
             throw new ApiException("You already reviewed this specialist");
         }
@@ -75,11 +70,15 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    public void update(Integer reviewId, Review newReview) {
-
+    public void update(User authUser, Integer reviewId, Review newReview) {
         Review review = reviewRepository.getReviewById(reviewId);
         if (review == null) {
             throw new ApiException("Review not found");
+        }
+
+        //only the review owner can update
+        if (!authUser.getRole().equals("ADMIN") && !review.getCustomer().getId().equals(authUser.getId())) {
+            throw new ApiException("Unauthorized to update this review");
         }
 
         review.setRate(newReview.getRate());
@@ -88,31 +87,29 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    public void delete(Integer reviewId) {
-
+    public void delete(User authUser, Integer reviewId) {
         Review review = reviewRepository.getReviewById(reviewId);
         if (review == null) {
             throw new ApiException("Review not found");
         }
 
+        //only the review owner can delete
+        if (!authUser.getRole().equals("ADMIN") && !review.getCustomer().getId().equals(authUser.getId())) {
+            throw new ApiException("Unauthorized to delete this review");
+        }
+
         reviewRepository.delete(review);
     }
 
+    /// Extra endpoints
 
-    ///  extra end points
-
-
-    // Reviews for a specific specialist (Figma: specialist profile)
     public List<Review> getReviewsBySpecialist(Integer specialistId) {
-
         Specialist specialist = specialistRepository.getSpecialistById(specialistId);
         if (specialist == null) {
             throw new ApiException("Specialist not found");
         }
 
-        List<Review> reviews =
-                reviewRepository.getReviewsBySpecialistId(specialistId);
-
+        List<Review> reviews = reviewRepository.getReviewsBySpecialistId(specialistId);
         if (reviews.isEmpty()) {
             throw new ApiException("No reviews found for this specialist");
         }
@@ -120,32 +117,27 @@ public class ReviewService {
         return reviews;
     }
 
-    // Get review by id
     public Review getReviewById(Integer reviewId) {
-
         Review review = reviewRepository.getReviewById(reviewId);
         if (review == null) {
             throw new ApiException("Review not found");
         }
-
         return review;
     }
 
-    public List<Review>getSpecialistReviews(Integer spec_id){
-        Specialist specialist = specialistRepository.findSpecialistById(spec_id);
+    public List<Review> getSpecialistReviews(Integer specialistId) {
+        Specialist specialist = specialistRepository.findSpecialistById(specialistId);
         if (specialist == null) {
             throw new ApiException("Specialist not found");
         }
         return reviewRepository.findReviewsBySpecialist(specialist);
     }
 
-    public List<Review>getReviewsByCustomer(Integer customer_id){
-        Customer customer = customerRepository.getCustomerById(customer_id);
+    public List<Review> getReviewsByCustomer(Integer customerId) {
+        Customer customer = customerRepository.getCustomerById(customerId);
         if (customer == null) {
             throw new ApiException("Customer not found");
         }
         return reviewRepository.findReviewsByCustomer(customer);
     }
-
-
 }

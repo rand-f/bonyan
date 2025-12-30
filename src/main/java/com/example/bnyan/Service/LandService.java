@@ -3,6 +3,7 @@ package com.example.bnyan.Service;
 import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.Model.Customer;
 import com.example.bnyan.Model.Land;
+import com.example.bnyan.Model.User;
 import com.example.bnyan.Repository.CustomerRepository;
 import com.example.bnyan.Repository.LandRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,16 @@ public class LandService {
     private final LandRepository landRepository;
     private final CustomerRepository customerRepository;
 
-    ///  Crud
+    /// crud
 
-    public List<Land> getAllLands() {
+    public List<Land> getAllLands(User authUser) {
+
+        if (!authUser.getRole().equals("ADMIN")) {
+            throw new ApiException("Only ADMIN can view all lands");
+        }
 
         List<Land> lands = landRepository.findAll();
+
         if (lands.isEmpty()) {
             throw new ApiException("No lands found");
         }
@@ -30,9 +36,13 @@ public class LandService {
         return lands;
     }
 
-    public void add(Integer customerId, Land land) {
+    public void add(User authUser, Land land) {
 
-        Customer customer = customerRepository.getCustomerById(customerId);
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can add lands");
+        }
+
+        Customer customer = customerRepository.getCustomerById(authUser.getId());
         if (customer == null) {
             throw new ApiException("Customer not found");
         }
@@ -44,14 +54,18 @@ public class LandService {
         landRepository.save(land);
     }
 
-    public void update(Integer landId, Integer customerId, Land newLand) {
+    public void update(User authUser, Integer landId, Land newLand) {
+
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can update lands");
+        }
 
         Land land = landRepository.getLandById(landId);
         if (land == null) {
             throw new ApiException("Land not found");
         }
 
-        if (!land.getCustomer().getId().equals(customerId)) {
+        if (!land.getCustomer().getId().equals(authUser.getId())) {
             throw new ApiException("Unauthorized");
         }
 
@@ -62,34 +76,33 @@ public class LandService {
         landRepository.save(land);
     }
 
+    public void delete(User authUser, Integer landId) {
 
-
-    public void delete(Integer landId, Integer customerId) {
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can delete lands");
+        }
 
         Land land = landRepository.getLandById(landId);
         if (land == null) {
             throw new ApiException("Land not found");
         }
 
-        if (!land.getCustomer().getId().equals(customerId)) {
+        if (!land.getCustomer().getId().equals(authUser.getId())) {
             throw new ApiException("Unauthorized");
         }
 
         landRepository.delete(land);
     }
 
+    /// extra endpoints
 
-    ///  extra endpoints
+    public List<Land> getMyLands(User authUser) {
 
-    // Lands owned by a customer (Figma: My Lands)
-    public List<Land> getLandsByCustomer(Integer customerId) {
-
-        Customer customer = customerRepository.getCustomerById(customerId);
-        if (customer == null) {
-            throw new ApiException("Customer not found");
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can view their lands");
         }
 
-        List<Land> lands = landRepository.getLandsByCustomerId(customerId);
+        List<Land> lands = landRepository.getLandsByCustomerId(authUser.getId());
         if (lands.isEmpty()) {
             throw new ApiException("No lands found for this customer");
         }
@@ -97,15 +110,19 @@ public class LandService {
         return lands;
     }
 
-    public Land getLandById(Integer landId) {
+    public Land getLandById(User authUser, Integer landId) {
 
         Land land = landRepository.getLandById(landId);
         if (land == null) {
             throw new ApiException("Land not found");
         }
 
+        if (authUser.getRole().equals("USER") && !land.getCustomer().getId().equals(authUser.getId())) {
+            throw new ApiException("Unauthorized access");
+        }
+
         return land;
     }
-
 }
+
 
