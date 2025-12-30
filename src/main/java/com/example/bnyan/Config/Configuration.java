@@ -160,6 +160,10 @@ public class Configuration {
                                 .requestMatchers("/api/v1/build-request/get",
                                         "/api/v1/build-request/get-by-id/**").hasAnyAuthority("USER", "ADMIN")
 
+                                // ===== PAYMENT =====
+                                .requestMatchers("/payment/create", "/payment/status/**")
+                                .hasAnyAuthority("USER", "ADMIN")
+
 
                                 .anyRequest().authenticated()
                         )
