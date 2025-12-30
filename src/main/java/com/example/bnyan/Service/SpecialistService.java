@@ -50,12 +50,20 @@ public class SpecialistService {
         specialistRepository.save(specialist);
     }
 
-    public void assignDomain(Integer specialist_id, Integer domain_id) {
-        Specialist specialist = specialistRepository.findSpecialistById(specialist_id);
+    public void assignDomain(Integer user_id, Integer domain_id) {
+
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
+        Specialist specialist = specialistRepository.findSpecialistById(user_id);
+        if(specialist==null){throw new ApiException("only specialist can make this process");}
+
         Domain domain = domainRepository.findDomainById(domain_id);
 
-        if (specialist == null || domain == null) {
-            throw new ApiException("can not assign this domain to this specialist");
+        if (domain == null) {
+            throw new ApiException("domain not found");
         }
 
         domain.getSpecialists().add(specialist);
@@ -64,8 +72,14 @@ public class SpecialistService {
         domainRepository.save(domain);
     }
 
-    public void acceptRequest(Integer spec_id, Integer request_id) {
-        Specialist specialist = specialistRepository.findSpecialistById(spec_id);
+    public void acceptRequest(Integer user_id, Integer request_id) {
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
+        Specialist specialist = specialistRepository.findSpecialistById(user_id);
+
         SpecialistRequest specialistRequest = specialistRequestRepository.findSpecialistRequestById(request_id);
 
         if (specialist == null || specialistRequest == null) {
@@ -76,11 +90,17 @@ public class SpecialistService {
             throw new ApiException("unauthorized to accept this request");
         }
 
-        specialistRequestService.acceptRequest(request_id);
+        specialistRequestService.acceptRequest(user_id, request_id);
     }
 
-    public void rejectRequest(Integer spec_id, Integer request_id) {
-        Specialist specialist = specialistRepository.findSpecialistById(spec_id);
+    public void rejectRequest(Integer user_id, Integer request_id) {
+
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
+        Specialist specialist = specialistRepository.findSpecialistById(user_id);
         SpecialistRequest specialistRequest = specialistRequestRepository.findSpecialistRequestById(request_id);
 
         if (specialist == null || specialistRequest == null) {
@@ -91,13 +111,22 @@ public class SpecialistService {
             throw new ApiException("unauthorized to reject this request");
         }
 
-        specialistRequestService.rejectRequest(request_id);
+        specialistRequestService.rejectRequest(user_id,request_id);
     }
 
-    public void updateSpecialist(Integer id, Specialist specialist) {
-        Specialist old = specialistRepository.findSpecialistById(id);
+    public void updateSpecialist(Integer user_id,Integer spec_id, Specialist specialist) {
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
+        Specialist old = specialistRepository.findSpecialistById(spec_id);
         if (old == null) {
             throw new ApiException("specialist not found");
+        }
+
+        if(!user.getRole().equals("ADMIN") && old.getId()!=user.getId()){
+            throw new ApiException("unauthorized");
         }
 
         old.setSpeciality(specialist.getSpeciality());
@@ -113,32 +142,79 @@ public class SpecialistService {
         specialistRepository.delete(specialist);
     }
 
-    public List<Specialist>getARCHITECTURAL_ENGINEER(){
+    public List<Specialist>getARCHITECTURAL_ENGINEER(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
         return specialistRepository.findSpecialistBySpeciality("ARCHITECTURAL_ENGINEER");
     }
-    public List<Specialist>getMECHANICAL_ENGINEER(){
+
+    public List<Specialist>getMECHANICAL_ENGINEER(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
         return specialistRepository.findSpecialistBySpeciality("MECHANICAL_ENGINEER");
     }
-    public List<Specialist>getELECTRICAL_ENGINEER(){
+
+    public List<Specialist>getELECTRICAL_ENGINEER(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
         return specialistRepository.findSpecialistBySpeciality("ELECTRICAL_ENGINEER");
     }
-    public List<Specialist>getCIVIL_ENGINEER(){
+
+    public List<Specialist>getCIVIL_ENGINEER(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
         return specialistRepository.findSpecialistBySpeciality("CIVIL_ENGINEER");
     }
-    public List<Specialist>getPROJECT_MANAGER(){
+
+    public List<Specialist>getPROJECT_MANAGER(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
         return specialistRepository.findSpecialistBySpeciality("PROJECT_MANAGER");
     }
-    public List<Specialist>getDESIGNER(){
+
+    public List<Specialist>getDESIGNER(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
         return specialistRepository.findSpecialistBySpeciality("DESIGNER");
     }
-    public List<Specialist>getGENERAL_CONTRACTOR(){
+
+    public List<Specialist>getGENERAL_CONTRACTOR(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
         return specialistRepository.findSpecialistBySpeciality("GENERAL_CONTRACTOR");
     }
 
-    public List<SpecialistRequest>getMyRequests(Integer spec_id){
-        Specialist specialist = specialistRepository.findSpecialistById(spec_id);
+    public List<SpecialistRequest>getMyRequests(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        if (user==null){
+            throw new ApiException("user  not fond");
+        }
+
+        Specialist specialist = specialistRepository.findSpecialistById(user_id);
         if(specialist==null){
-            throw new ApiException("specialist not found");
+            throw new ApiException("only specialist ca do this process");
         }
 
         List<SpecialistRequest> myRequests= specialistRequestRepository.findSpecialistRequestBySpecialist(specialist);

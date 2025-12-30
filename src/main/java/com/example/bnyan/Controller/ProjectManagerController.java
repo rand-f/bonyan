@@ -1,9 +1,11 @@
 package com.example.bnyan.Controller;
 import com.example.bnyan.Api.ApiResponse;
 import com.example.bnyan.DTO.ProjectManagerDTO;
+import com.example.bnyan.Model.User;
 import com.example.bnyan.Service.ProjectManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,32 +15,37 @@ public class ProjectManagerController {
 
     private final ProjectManagerService projectManagerService;
 
+    //admin and customer
     @GetMapping("/get")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(projectManagerService.getAll());
     }
 
+    //everyone
     @PostMapping("/register")
     public ResponseEntity<?> registerManager(@RequestBody ProjectManagerDTO managerDTO) {
         projectManagerService.registerManager(managerDTO);
         return ResponseEntity.ok(new ApiResponse("project manager registered successfully"));
     }
 
-    @PutMapping("/accept-request/{manager_id}/{request_id}")
-    public ResponseEntity<?> acceptRequest(@PathVariable Integer manager_id, @PathVariable Integer request_id) {
-        projectManagerService.exceptRequest(manager_id, request_id);
+    //manager
+    @PutMapping("/accept-request/{request_id}")
+    public ResponseEntity<?> acceptRequest(@AuthenticationPrincipal User user, @PathVariable Integer request_id) {
+        projectManagerService.acceptRequest(user.getId(), request_id);
         return ResponseEntity.ok(new ApiResponse("request accepted successfully"));
     }
 
-    @PutMapping("/reject-request/{manager_id}/{request_id}")
-    public ResponseEntity<?> rejectRequest(@PathVariable Integer manager_id, @PathVariable Integer request_id) {
-        projectManagerService.rejectRequest(manager_id, request_id);
+    //manager
+    @PutMapping("/reject-request/{request_id}")
+    public ResponseEntity<?> rejectRequest(@AuthenticationPrincipal User user, @PathVariable Integer request_id) {
+        projectManagerService.rejectRequest(user.getId(), request_id);
         return ResponseEntity.ok(new ApiResponse("request rejected successfully"));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteManager(@PathVariable Integer id) {
-        projectManagerService.deleteProjectManager(id);
+    //admin
+    @DeleteMapping("/delete/{request_id}")
+    public ResponseEntity<?> deleteManager(@PathVariable Integer request_id) {
+        projectManagerService.deleteProjectManager(request_id);
         return ResponseEntity.ok(new ApiResponse("project manager deleted successfully"));
     }
 }

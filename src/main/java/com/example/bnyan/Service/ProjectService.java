@@ -38,10 +38,11 @@ public class ProjectService {
     }
 
     //for customers
-    public List<Project> getMyProjects(Integer customer_id){
-        Customer customer = customerRepository.getCustomerById(customer_id);
+    public List<Project> getMyProjects(Integer user_id){
+        User user = userRepository.getUserById(user_id);
+        Customer customer = customerRepository.getCustomerById(user_id);
 
-        if (customer==null){
+        if (user==null||customer==null){
             throw new ApiException("Customer not found");
         }
 
@@ -49,10 +50,10 @@ public class ProjectService {
     }
 
 
-    public void addProject(Integer customer_id, Integer request_id, ProjectDTO projectDTO) {
-
-        Customer customer= customerRepository.getCustomerById(customer_id);
-        if(customer==null){
+    public void addProject(Integer user_id, Integer request_id, ProjectDTO projectDTO) {
+        User user = userRepository.getUserById(user_id);
+        Customer customer= customerRepository.getCustomerById(user_id);
+        if(user==null||customer==null){
             throw new ApiException("Customer not found");
         }
 
@@ -79,7 +80,7 @@ public class ProjectService {
 
         // if user did not specify budget AI will
         if(projectDTO.getBudget()==null){
-            PredictionBudgetDTO budgetDTO= predictBudget(customer_id,aiDTO);
+            PredictionBudgetDTO budgetDTO= predictBudget(user_id,aiDTO);
             project.setBudget(budgetDTO.getMaxBudget()+budgetDTO.getMinBudget()*0.5);
             aiDTO.setBudget(budgetDTO.getMaxBudget()+budgetDTO.getMinBudget()*0.5);
         }else{
@@ -89,7 +90,7 @@ public class ProjectService {
 
         // if user did not specify time AI will
         if(projectDTO.getProjectPeriod()==null){
-            PredictionTimeDTO timeDTO = predictTime(customer_id,aiDTO);
+            PredictionTimeDTO timeDTO = predictTime(user_id,aiDTO);
             project.setDuration(timeDTO.getExpectedProjectPeriod());
             project.setExpectedEndDate(projectDTO.getStartDate().plusDays(projectDTO.getProjectPeriod()));
         }else{
@@ -122,10 +123,20 @@ public class ProjectService {
         return aiService.predictTime(aiDTO);
     }
 
-    public void updateProject(Integer id, Project project) {
+    public void updateProject(Integer user_id,Integer id, Project project) {
+        User user = userRepository.getUserById(user_id);
+        Customer customer= customerRepository.getCustomerById(user_id);
+        if(user==null||customer==null){
+            throw new ApiException("Customer not found");
+        }
+
         Project old = projectRepository.findProjectById(id);
         if (old == null) {
             throw new ApiException("project not found");
+        }
+
+        if(old.getCustomer().getId()!=customer.getId()){
+            throw new ApiException("unauthorized access");
         }
 
         old.setBudget(project.getBudget());
@@ -136,18 +147,39 @@ public class ProjectService {
         projectRepository.save(old);
     }
 
-    public void deleteProject(Integer id) {
+    public void deleteProject(Integer user_id, Integer id) {
+        User user = userRepository.getUserById(user_id);
+        Customer customer= customerRepository.getCustomerById(user_id);
+        if(user==null||customer==null){
+            throw new ApiException("Customer not found");
+        }
+
         Project project = projectRepository.findProjectById(id);
         if (project == null) {
             throw new ApiException("project not found");
         }
+
+        if(project.getCustomer().getId()!=customer.getId()){
+            throw new ApiException("unauthorized access");
+        }
+
         projectRepository.delete(project);
     }
 
-    public byte[] generateImage(Integer project_id){
+    public byte[] generateImage(Integer user_id, Integer project_id){
+        User user = userRepository.getUserById(user_id);
+        Customer customer= customerRepository.getCustomerById(user_id);
+        if(user==null||customer==null){
+            throw new ApiException("Customer not found");
+        }
+
         Project project = projectRepository.findProjectById(project_id);
         if (project==null){
             throw new ApiException("project not found");
+        }
+
+        if(project.getCustomer().getId()!=customer.getId()){
+            throw new ApiException("unauthorized access");
         }
 
         String prompt = promptBuilder.generateImagePrompt(project.getDescription());
@@ -155,21 +187,20 @@ public class ProjectService {
         return image;
     }
 
-    public ArrayList workingOnTheProject(//Integer using_id,
-                                         Integer project_id){
-//        User user = userRepository.getUserById(using_id);
-//        if (user==null){
-//            throw new ApiException("user not found");
-//        }
+    public ArrayList workingOnTheProject(Integer using_id, Integer project_id){
+        User user = userRepository.getUserById(using_id);
+        if (user==null){
+            throw new ApiException("user not found");
+        }
 
         Project project = projectRepository.findProjectById(project_id);
         if (project==null){
             throw new ApiException("project not found");
         }
 
-//        if(project.getCustomer().getId()!=user.getId()){
-//            throw new ApiException("unauthorized");
-//        }
+        if(project.getCustomer().getId()!=user.getId() && !user.getRole().equals("ADMIN")){
+            throw new ApiException("unauthorized");
+        }
 
         if(project.getSpecialists().isEmpty()&&project.getProjectManager()==null){
             throw new ApiException("no one working on the project yet");

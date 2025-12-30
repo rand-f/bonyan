@@ -1,14 +1,8 @@
 package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
-import com.example.bnyan.Model.Project;
-import com.example.bnyan.Model.ProjectManager;
-import com.example.bnyan.Model.Specialist;
-import com.example.bnyan.Model.SpecialistRequest;
-import com.example.bnyan.Repository.ProjectManagerRepository;
-import com.example.bnyan.Repository.ProjectRepository;
-import com.example.bnyan.Repository.SpecialistRepository;
-import com.example.bnyan.Repository.SpecialistRequestRepository;
+import com.example.bnyan.Model.*;
+import com.example.bnyan.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,13 +19,31 @@ public class SpecialistRequestService {
     private final SpecialistRepository specialistRepository;
     private final ProjectRepository projectRepository;
     private final ProjectManagerRepository projectManagerRepository;
+    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
 
     public List<SpecialistRequest> getAll() {
         return requestRepository.findAll();
     }
 
-    public void addSpecialistRequest(SpecialistRequest request, Integer project_id, Integer spec_id) {
+    public void addSpecialistRequest(Integer user_id,SpecialistRequest request, Integer project_id, Integer spec_id) {
+
+        User user = userRepository.getUserById(user_id);
+        if(user==null){
+            throw new ApiException("user not found");
+        }
+
+        Customer customer = customerRepository.getCustomerById(user_id);
+        if(customer==null){
+            throw new ApiException("only customer can make this process");
+        }
+
         Project project = projectRepository.findProjectById(project_id);
+
+        if(project.getCustomer().getId()!=customer.getId()){
+            throw new ApiException("unauthorized access");
+        }
+
         Specialist specialist = specialistRepository.findSpecialistById(spec_id);
 
         if (project == null || specialist == null) {
@@ -54,17 +66,29 @@ public class SpecialistRequestService {
         sendSpecialistRequestNotification(specialist, project, request);
     }
 
-    public void acceptRequest(Integer requestId) {
+    public void acceptRequest(Integer user_id,Integer requestId) {
+        User user = userRepository.getUserById(user_id);
+            if(user==null){
+                throw new ApiException("user not found");
+            }
+
         SpecialistRequest specialistRequest = requestRepository.findSpecialistRequestById(requestId);
         if (specialistRequest == null) {
             throw new ApiException("Specialist request not found");
+        }
+
+        Specialist specialist = specialistRequest.getSpecialist();
+
+        if(specialist.getId()!=user.getId()){
+            throw new ApiException("unauthorized access");
         }
 
         if (!specialistRequest.getStatus().equalsIgnoreCase("pending")) {
             throw new ApiException("Only pending requests can be accepted");
         }
 
-        Specialist specialist = specialistRequest.getSpecialist();
+
+
         Project project = specialistRequest.getProject();
 
         specialist.getProjects().add(project);
@@ -78,10 +102,21 @@ public class SpecialistRequestService {
         sendAcceptNotification(specialistRequest);
     }
 
-    public void rejectRequest(Integer requestId) {
+    public void rejectRequest(Integer user_id,Integer requestId) {
+        User user = userRepository.getUserById(user_id);
+        if(user==null){
+            throw new ApiException("user not found");
+        }
+
         SpecialistRequest specialistRequest = requestRepository.findSpecialistRequestById(requestId);
         if (specialistRequest == null) {
             throw new ApiException("Specialist request not found");
+        }
+
+        Specialist specialist = specialistRequest.getSpecialist();
+
+        if(specialist.getId()!=user.getId()){
+            throw new ApiException("unauthorized access");
         }
 
         if (!specialistRequest.getStatus().equalsIgnoreCase("pending")) {
@@ -94,12 +129,27 @@ public class SpecialistRequestService {
         sendRejectNotification(specialistRequest);
     }
 
-    public void addManagerRequest(SpecialistRequest request, Integer project_id, Integer manager_id) {
+    public void addManagerRequest(Integer user_id,SpecialistRequest request, Integer project_id, Integer manager_id) {
+        User user = userRepository.getUserById(user_id);
+        if(user==null){
+            throw new ApiException("user not found");
+        }
+
+        Customer customer = customerRepository.getCustomerById(user_id);
+        if(customer==null){
+            throw new ApiException("you need to sign in as a customer to continue");
+        }
+
         Project project = projectRepository.findProjectById(project_id);
+
+        if(project.getCustomer().getId()!=customer.getId()){
+            throw new ApiException("unauthorized access");
+        }
+
         ProjectManager manager = projectManagerRepository.findProjectManagerById(manager_id);
 
         if(project==null || manager==null){
-            throw new ApiException("this project request can nt be assigned to the specialist");
+            throw new ApiException("this project request can not be assigned to the specialist");
         }
 
         request.setProject(project);
@@ -116,26 +166,55 @@ public class SpecialistRequestService {
         requestRepository.save(request);
     }
 
-    public void updateRequest(Integer id, SpecialistRequest request) {
+    public void updateRequest(Integer user_id, Integer id, SpecialistRequest request) {
+        User user = userRepository.getUserById(user_id);
+        if(user==null){
+            throw new ApiException("user not found");
+        }
+
+        Customer customer = customerRepository.getCustomerById(user_id);
+        if(customer==null){
+            throw new ApiException("you need to sign in as a customer to continue");
+        }
+
         SpecialistRequest old = requestRepository.findSpecialistRequestById(id);
         if (old == null) {
             throw new ApiException("request not found");
         }
 
+        if(old.getProject().getCustomer().getId()!= customer.getId()){
+            throw new ApiException("unauthorized access");
+        }
+
         old.setDescription(request.getDescription());
         old.setOfferedPrice(request.getOfferedPrice());
-        old.setStatus(request.getStatus());
+        //old.setStatus(request.getStatus());
         old.setExpectedStartDate(request.getExpectedStartDate());
         old.setProjectExpectedEndDate(request.getProjectExpectedEndDate());
 
         requestRepository.save(old);
     }
 
-    public void deleteRequest(Integer id) {
+    public void deleteRequest(Integer user_id,Integer id) {
+        User user = userRepository.getUserById(user_id);
+        if(user==null){
+            throw new ApiException("user not found");
+        }
+
+        Customer customer = customerRepository.getCustomerById(user_id);
+        if(customer==null){
+            throw new ApiException("you need to sign in as a customer to continue");
+        }
+
         SpecialistRequest request = requestRepository.findSpecialistRequestById(id);
         if (request == null) {
             throw new ApiException("request not found");
         }
+
+        if(request.getProject().getCustomer().getId()!= customer.getId()){
+            throw new ApiException("unauthorized access");
+        }
+
         requestRepository.delete(request);
     }
 

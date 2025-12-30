@@ -46,7 +46,7 @@ public class ProjectManagerService {
         projectManagerRepository.save(projectManager);
     }
 
-    public void exceptRequest(Integer manager_id, Integer request_id){
+    public void acceptRequest(Integer manager_id, Integer request_id){
         ProjectManager manager= projectManagerRepository.findProjectManagerById(manager_id);
         SpecialistRequest specialistRequest =specialistRequestRepository.findSpecialistRequestById(request_id);
 
@@ -63,15 +63,21 @@ public class ProjectManagerService {
         manager.getProject().add(project);
         project.setProjectManager(manager);
 
-        specialistRequest.setStatus("excepted");
+        specialistRequest.setStatus("accepted");
     }
 
-    public void rejectRequest(Integer manager_id, Integer request_id){
-        ProjectManager manager = projectManagerRepository.findProjectManagerById(manager_id);
+    public void rejectRequest(Integer user_id, Integer request_id){
+
+        User user = userRepository.getUserById(user_id);
+        if(user==null){
+            throw new ApiException("user not found");
+        }
+
+        ProjectManager manager = projectManagerRepository.findProjectManagerById(user_id);
         SpecialistRequest specialistRequest =specialistRequestRepository.findSpecialistRequestById(request_id);
 
         if (manager==null||specialistRequest==null){
-            throw new ApiException("can not except this request");
+            throw new ApiException("can not accept this request");
         }
 
         if(manager.getId()!=specialistRequest.getSpecialist().getId()){
