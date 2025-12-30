@@ -24,7 +24,6 @@ public class Configuration {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                         .authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/user/register-customer").permitAll()
                                             // ===== USER =====
-                                        .requestMatchers("/api/v1/user/register-customer").permitAll()
 
                                         .requestMatchers(
                                                 "/api/v1/user/get",
@@ -64,6 +63,8 @@ public class Configuration {
                                         ).hasAnyAuthority("SPECIALIST", "ADMIN")
 
                                 // CUSTOMER
+                                .requestMatchers("/api/v1/customer/register-customer").permitAll()
+
                                 .requestMatchers(
                                         "/api/v1/customer/get-by-id",
                                         "/api/v1/customer/get-properties",

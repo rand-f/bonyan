@@ -1,8 +1,6 @@
 package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
-import com.example.bnyan.DTO.CustomerDTO;
-import com.example.bnyan.Model.Customer;
 import com.example.bnyan.Model.User;
 import com.example.bnyan.Repository.CustomerRepository;
 import com.example.bnyan.Repository.UserRepository;
@@ -10,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,28 +23,7 @@ public class UserService {
         return users;
     }
 
-    public void registerCustomer(CustomerDTO customerDTO) {
-        if (userRepository.getUserByUsername(customerDTO.getUsername()) != null)
-            throw new ApiException("Username already exists");
 
-        if (userRepository.getUserByEmail(customerDTO.getEmail()) != null)
-            throw new ApiException("Email already exists");
-
-        User user = new User();
-        user.setUsername(customerDTO.getUsername());
-        String hash = new BCryptPasswordEncoder().encode(customerDTO.getPassword());
-        user.setPassword(hash);
-        user.setEmail(customerDTO.getEmail());
-        user.setPhoneNumber(customerDTO.getPhoneNumber());
-        user.setFullName(customerDTO.getFullName());
-        user.setRole("USER");
-        user.setCreatedAt(LocalDateTime.now());
-        userRepository.save(user);
-
-        Customer customer = new Customer();
-        customer.setUser(user);
-        customerRepository.save(customer);
-    }
 
     public void update(Integer sessionUserId, User user) {
 
