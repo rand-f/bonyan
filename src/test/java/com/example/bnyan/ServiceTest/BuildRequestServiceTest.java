@@ -26,8 +26,6 @@ public class BuildRequestServiceTest {
     @Mock
     private BuildRequestRepository buildRequestRepository;
     @Mock
-    private UserRepository userRepository;
-    @Mock
     private CustomerRepository customerRepository;
     @Mock
     private LandRepository landRepository;
@@ -37,8 +35,9 @@ public class BuildRequestServiceTest {
     private BuildRequest buildRequest;
     private Customer customer;
     private Land land;
-    private User admin;
     private Project project;
+    private User admin;
+    private User user;
 
     @BeforeEach
     void setup() {
@@ -47,10 +46,7 @@ public class BuildRequestServiceTest {
 
         land = new Land();
         land.setId(10);
-
-        admin = new User();
-        admin.setId(2);
-        admin.setRole("ADMIN");
+        land.setCustomer(customer);
 
         project = new Project();
         project.setId(5);
@@ -61,6 +57,14 @@ public class BuildRequestServiceTest {
         buildRequest.setLand(land);
         buildRequest.setProject(project);
         buildRequest.setStatus("PROCESSING");
+
+        admin = new User();
+        admin.setId(2);
+        admin.setRole("ADMIN");
+
+        user = new User();
+        user.setId(1);
+        user.setRole("USER");
     }
 
     @Test
@@ -69,19 +73,24 @@ public class BuildRequestServiceTest {
         list.add(buildRequest);
         when(buildRequestRepository.findAll()).thenReturn(list);
 
-        List<BuildRequest> result = buildRequestService.getAllBuildRequests();
+        List<BuildRequest> result = buildRequestService.getAllBuildRequests(admin);
 
         assertEquals(1, result.size());
         verify(buildRequestRepository, times(1)).findAll();
     }
 
     @Test
+    public void getAllBuildRequestsUnauthorizedTest() {
+        assertThrows(ApiException.class, () -> buildRequestService.getAllBuildRequests(user));
+    }
+
+    @Test
     public void addBuildRequestSuccessTest() {
-        when(customerRepository.getCustomerById(1)).thenReturn(customer);
+        when(customerRepository.getCustomerById(user.getId())).thenReturn(customer);
         when(landRepository.getLandById(10)).thenReturn(land);
         when(buildRequestRepository.getBuildRequestByLandId(10)).thenReturn(null);
 
-        buildRequestService.add(1, 10, buildRequest);
+        buildRequestService.add(user, 10, buildRequest);
 
         assertEquals("PROCESSING", buildRequest.getStatus());
         assertNotNull(buildRequest.getCreatedAt());
@@ -89,11 +98,15 @@ public class BuildRequestServiceTest {
     }
 
     @Test
+    public void addBuildRequestUnauthorizedTest() {
+        assertThrows(ApiException.class, () -> buildRequestService.add(admin, 10, buildRequest));
+    }
+
+    @Test
     public void updateStatusSuccessTest() {
-        when(userRepository.getUserById(2)).thenReturn(admin);
         when(buildRequestRepository.getBuildRequestById(1)).thenReturn(buildRequest);
 
-        buildRequestService.updateStatus(1, 2, "APPROVED");
+        buildRequestService.updateStatus(admin, 1, "APPROVED");
 
         assertEquals("APPROVED", buildRequest.getStatus());
         verify(buildRequestRepository, times(1)).save(buildRequest);
@@ -101,53 +114,124 @@ public class BuildRequestServiceTest {
 
     @Test
     public void updateStatusUnauthorizedTest() {
-        User regularUser = new User();
-        regularUser.setId(3);
-        regularUser.setRole("CUSTOMER");
-
-        when(userRepository.getUserById(3)).thenReturn(regularUser);
-
-        assertThrows(ApiException.class, () -> {
-            buildRequestService.updateStatus(1, 3, "APPROVED");
-        });
+        assertThrows(ApiException.class, () -> buildRequestService.updateStatus(user, 1, "APPROVED"));
     }
 
     @Test
     public void deleteSuccessTest() {
-        when(customerRepository.getCustomerById(1)).thenReturn(customer);
         when(buildRequestRepository.getBuildRequestById(1)).thenReturn(buildRequest);
+        when(customerRepository.getCustomerById(user.getId())).thenReturn(customer);
 
-        buildRequestService.delete(1, 1);
+        buildRequestService.delete(user, 1);
 
         verify(buildRequestRepository, times(1)).delete(buildRequest);
     }
 
     @Test
-    public void getBuildRequestsByStatusTest() {
+    public void deleteUnauthorizedTest() {
+        User otherUser = new User();
+        otherUser.setId(3);
+        otherUser.setRole("USER");
+        when(buildRequestRepository.getBuildRequestById(1)).thenReturn(buildRequest);
+
+        Customer otherCustomer = new Customer();
+        otherCustomer.setId(3);
+
+        when(customerRepository.getCustomerById(otherUser.getId())).thenReturn(otherCustomer);
+
+        assertThrows(ApiException.class, () -> buildRequestService.delete(otherUser, 1));
+    }
+
+    @Test
+    public void getBuildRequestsByStatusSuccessTest() {
         List<BuildRequest> list = new ArrayList<>();
         list.add(buildRequest);
         when(buildRequestRepository.getBuildRequestsByStatus("PROCESSING")).thenReturn(list);
 
-        List<BuildRequest> result = buildRequestService.getBuildRequestsByStatus("processing");
+        List<BuildRequest> result = buildRequestService.getBuildRequestsByStatus(admin, "processing");
 
-        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
         assertEquals("PROCESSING", result.get(0).getStatus());
+    }
+
+    @Test
+    public void getBuildRequestsByStatusUnauthorizedTest() {
+        assertThrows(ApiException.class, () -> buildRequestService.getBuildRequestsByStatus(user, "PROCESSING"));
     }
 
     @Test
     public void approveRequestSuccessTest() {
         when(buildRequestRepository.getBuildRequestById(1)).thenReturn(buildRequest);
-        when(projectRepository.findProjectById(5)).thenReturn(project);
-        when(landRepository.getLandById(10)).thenReturn(land);
 
-        buildRequestService.approveRequest(1);
+        buildRequestService.approveRequest(admin, 1);
 
-        assertEquals("approved", buildRequest.getStatus());
+        assertEquals("APPROVED", buildRequest.getStatus());
         assertEquals(land, project.getLand());
         assertEquals(project, land.getProject());
 
         verify(projectRepository, times(1)).save(project);
         verify(landRepository, times(1)).save(land);
         verify(buildRequestRepository, times(1)).save(buildRequest);
+    }
+
+    @Test
+    public void approveRequestUnauthorizedTest() {
+        assertThrows(ApiException.class, () -> buildRequestService.approveRequest(user, 1));
+    }
+
+    @Test
+    public void getBuildRequestByIdSuccessTest() {
+        when(buildRequestRepository.getBuildRequestById(1)).thenReturn(buildRequest);
+
+        BuildRequest result = buildRequestService.getBuildRequestById(user, 1);
+        assertEquals(buildRequest, result);
+    }
+
+    @Test
+    public void getBuildRequestByIdUnauthorizedTest() {
+        User otherUser = new User();
+        otherUser.setId(3);
+        otherUser.setRole("USER");
+        when(buildRequestRepository.getBuildRequestById(1)).thenReturn(buildRequest);
+
+        assertThrows(ApiException.class, () -> buildRequestService.getBuildRequestById(otherUser, 1));
+    }
+
+    @Test
+    public void getMyBuildRequestsSuccessTest() {
+        List<BuildRequest> list = new ArrayList<>();
+        list.add(buildRequest);
+        when(buildRequestRepository.getBuildRequestsByCustomerId(user.getId())).thenReturn(list);
+
+        List<BuildRequest> result = buildRequestService.getMyBuildRequests(user);
+
+        assertEquals(1, result.size());
+        assertEquals(buildRequest, result.get(0));
+    }
+
+    @Test
+    public void getMyBuildRequestsUnauthorizedTest() {
+        assertThrows(ApiException.class, () -> buildRequestService.getMyBuildRequests(admin));
+    }
+
+    @Test
+    public void getBuildRequestsByLandIdSuccessTest() {
+        when(landRepository.getLandById(10)).thenReturn(land);
+        when(buildRequestRepository.getBuildRequestsByLandId(10)).thenReturn(List.of(buildRequest));
+
+        List<BuildRequest> result = buildRequestService.getBuildRequestsByLandId(user, 10);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void getBuildRequestsByLandIdUnauthorizedTest() {
+        Land land2 = new Land();
+        Customer otherCustomer = new Customer();
+        otherCustomer.setId(3);
+        land2.setCustomer(otherCustomer);
+        when(landRepository.getLandById(10)).thenReturn(land2);
+
+        assertThrows(ApiException.class, () -> buildRequestService.getBuildRequestsByLandId(user, 10));
     }
 }

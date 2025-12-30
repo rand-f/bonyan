@@ -2,11 +2,15 @@ package com.example.bnyan.Controller;
 
 import com.example.bnyan.Api.ApiResponse;
 import com.example.bnyan.Model.Land;
+import com.example.bnyan.Model.User;
 import com.example.bnyan.Service.LandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/land")
@@ -17,43 +21,39 @@ public class LandController {
 
     /// CRUD endpoints
 
-    @GetMapping("/get")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.status(200)
-                .body(landService.getAllLands());
+    @GetMapping("/get-all")
+    public ResponseEntity<List<Land>> getAll(@AuthenticationPrincipal User authUser) {
+        return ResponseEntity.ok(landService.getAllLands(authUser));
     }
 
-    @PostMapping("/add/{customerId}")
-    public ResponseEntity<?> add(@PathVariable Integer customerId, @RequestBody @Valid Land land) {
-
-        landService.add(customerId, land);
-        return ResponseEntity.status(200).body(new ApiResponse("Land added"));
+    @PostMapping("/add")
+    public ResponseEntity<ApiResponse> add(@AuthenticationPrincipal User authUser, @RequestBody @Valid Land land) {
+        landService.add(authUser, land);
+        return ResponseEntity.ok(new ApiResponse("Land added"));
     }
 
-    @PutMapping("/update/{landId}/{customerId}")
-    public ResponseEntity<?> update(@PathVariable Integer landId, @PathVariable Integer customerId, @RequestBody @Valid Land land) {
+    @PutMapping("/update/{landId}")
+    public ResponseEntity<ApiResponse> update(@AuthenticationPrincipal User authUser, @PathVariable Integer landId, @RequestBody @Valid Land land) {
 
-        landService.update(landId, customerId, land);
-        return ResponseEntity.status(200).body(new ApiResponse("Land updated"));
+        landService.update(authUser, landId, land);
+        return ResponseEntity.ok(new ApiResponse("Land updated"));
     }
 
-
-    @DeleteMapping("/delete/{landId}/{customerId}")
-    public ResponseEntity<?> delete(@PathVariable Integer landId, @PathVariable Integer customerId) {
-
-        landService.delete(landId, customerId);
-        return ResponseEntity.status(200).body(new ApiResponse("Land deleted"));
+    @DeleteMapping("/delete/{landId}")
+    public ResponseEntity<ApiResponse> delete(@AuthenticationPrincipal User authUser, @PathVariable Integer landId) {
+        landService.delete(authUser, landId);
+        return ResponseEntity.ok(new ApiResponse("Land deleted"));
     }
 
     /// Extra endpoints
 
-    @GetMapping("/get-by-customer-id/{customerId}")
-    public ResponseEntity<?> getByCustomerId(@PathVariable Integer customerId) {
-        return ResponseEntity.status(200).body(landService.getLandsByCustomer(customerId));
+    @GetMapping("/my-lands")
+    public ResponseEntity<List<Land>> getMyLands(@AuthenticationPrincipal User authUser) {
+        return ResponseEntity.ok(landService.getMyLands(authUser));
     }
 
-    @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
-        return ResponseEntity.status(200).body(landService.getLandById(id));
+    @GetMapping("/get-by-id/{landId}")
+    public ResponseEntity<Land> getById(@AuthenticationPrincipal User authUser, @PathVariable Integer landId) {
+        return ResponseEntity.ok(landService.getLandById(authUser, landId));
     }
 }

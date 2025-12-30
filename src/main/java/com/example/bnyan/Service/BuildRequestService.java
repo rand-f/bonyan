@@ -14,16 +14,20 @@ import java.util.List;
 public class BuildRequestService {
 
     private final BuildRequestRepository buildRequestRepository;
-    private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final LandRepository landRepository;
     private final ProjectRepository projectRepository;
 
-    ///  Crud
+    /// crud
 
-    public List<BuildRequest> getAllBuildRequests() {
+    public List<BuildRequest> getAllBuildRequests(User authUser) {
+
+        if (!authUser.getRole().equals("ADMIN")) {
+            throw new ApiException("Only ADMIN can view all build requests");
+        }
 
         List<BuildRequest> buildRequests = buildRequestRepository.findAll();
+
         if (buildRequests.isEmpty()) {
             throw new ApiException("No build requests found");
         }
@@ -31,12 +35,13 @@ public class BuildRequestService {
         return buildRequests;
     }
 
-    public void add(Integer customerId, Integer landId, BuildRequest buildRequest) {
+    public void add(User authUser, Integer landId, BuildRequest buildRequest) {
 
-        Customer customer = customerRepository.getCustomerById(customerId);
-        if (customer == null) {
-            throw new ApiException("Customer not found");
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can create build requests");
         }
+
+        Customer customer = customerRepository.getCustomerById(authUser.getId());
 
         Land land = landRepository.getLandById(landId);
         if (land == null) {
@@ -58,20 +63,13 @@ public class BuildRequestService {
         buildRequestRepository.save(buildRequest);
     }
 
-    public void updateStatus(Integer requestId, Integer adminId, String status) {
+    public void updateStatus(User authUser, Integer requestId, String status) {
 
-        User admin = userRepository.getUserById(adminId);
-        if (admin == null) {
-            throw new ApiException("User not found");
-        }
-
-        if (!admin.getRole().equalsIgnoreCase("ADMIN")) {
+        if (!authUser.getRole().equals("ADMIN")) {
             throw new ApiException("Only ADMIN can update build request status");
         }
 
-        if (!status.equalsIgnoreCase("PROCESSING")
-                && !status.equalsIgnoreCase("APPROVED")
-                && !status.equalsIgnoreCase("REJECTED")) {
+        if (!status.equalsIgnoreCase("PROCESSING") && !status.equalsIgnoreCase("APPROVED") && !status.equalsIgnoreCase("REJECTED")) {
             throw new ApiException("Invalid status");
         }
 
@@ -86,12 +84,13 @@ public class BuildRequestService {
         buildRequestRepository.save(buildRequest);
     }
 
-    public void delete(Integer requestId, Integer customerId) {
+    public void delete(User authUser, Integer requestId) {
 
-        Customer customer = customerRepository.getCustomerById(customerId);
-        if (customer == null) {
-            throw new ApiException("Customer not found");
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can delete build requests");
         }
+
+        Customer customer = customerRepository.getCustomerById(authUser.getId());
 
         BuildRequest buildRequest =
                 buildRequestRepository.getBuildRequestById(requestId);
@@ -100,25 +99,35 @@ public class BuildRequestService {
             throw new ApiException("Build request not found");
         }
 
-        if (!buildRequest.getCustomer().getId().equals(customerId)) {
+        if (!buildRequest.getCustomer().getId().equals(customer.getId())) {
             throw new ApiException("You are not authorized to delete this build request");
         }
 
         buildRequestRepository.delete(buildRequest);
     }
 
-    ///  extra end points :
+    ///Extra endpoints
 
-    public BuildRequest getBuildRequestById(Integer id) {
+    public BuildRequest getBuildRequestById(User authUser, Integer id) {
+
         BuildRequest buildRequest = buildRequestRepository.getBuildRequestById(id);
+
         if (buildRequest == null) {
             throw new ApiException("Build request not found");
+        }
+
+        if (authUser.getRole().equals("USER") && !buildRequest.getCustomer().getId().equals(authUser.getId())) {
+            throw new ApiException("Unauthorized access");
         }
 
         return buildRequest;
     }
 
-    public List<BuildRequest> getBuildRequestsByStatus(String status) {
+    public List<BuildRequest> getBuildRequestsByStatus(User authUser, String status) {
+
+        if (!authUser.getRole().equals("ADMIN")) {
+            throw new ApiException("Only ADMIN can view requests by status");
+        }
 
         List<BuildRequest> buildRequests =
                 buildRequestRepository.getBuildRequestsByStatus(status.toUpperCase());
@@ -130,32 +139,35 @@ public class BuildRequestService {
         return buildRequests;
     }
 
-    public List<BuildRequest> getBuildRequestsByCustomerId(Integer customerId) {
+    public List<BuildRequest> getMyBuildRequests(User authUser) {
 
-        Customer customer = customerRepository.getCustomerById(customerId);
-        if (customer == null) {
-            throw new ApiException("Customer not found");
+        if (!authUser.getRole().equals("USER")) {
+            throw new ApiException("Only customers can view their build requests");
         }
 
-        List<BuildRequest> buildRequests =
-                buildRequestRepository.getBuildRequestsByCustomerId(customerId);
+        List<BuildRequest> buildRequests = buildRequestRepository.getBuildRequestsByCustomerId(authUser.getId());
 
         if (buildRequests.isEmpty()) {
-            throw new ApiException("No build requests found for this customer");
+            throw new ApiException("No build requests found");
         }
 
         return buildRequests;
     }
 
-    public List<BuildRequest> getBuildRequestsByLandId(Integer landId) {
+    public List<BuildRequest> getBuildRequestsByLandId(User authUser, Integer landId) {
 
         Land land = landRepository.getLandById(landId);
+
         if (land == null) {
             throw new ApiException("Land not found");
         }
 
-        List<BuildRequest> buildRequests =
-                buildRequestRepository.getBuildRequestsByLandId(landId);
+        if (authUser.getRole().equals("USER")
+                && !land.getCustomer().getId().equals(authUser.getId())) {
+            throw new ApiException("Unauthorized access");
+        }
+
+        List<BuildRequest> buildRequests = buildRequestRepository.getBuildRequestsByLandId(landId);
 
         if (buildRequests.isEmpty()) {
             throw new ApiException("No build requests found for this land");
@@ -164,36 +176,26 @@ public class BuildRequestService {
         return buildRequests;
     }
 
-    public void approveRequest(//Integer using_id,
-                               Integer request_id){
+    public void approveRequest(User authUser, Integer requestId) {
 
-        //authorization can be done later
-
-//        User user = userRepository.getUserById(using_id);
-//        if (user==null){
-//            throw new ApiException("user not found");
-//        }
-//        if(!user.getRole().equals("ADMIN")){
-//            throw new ApiException("unauthorized to make this gange");
-//        }
-
-        BuildRequest buildRequest= buildRequestRepository.getBuildRequestById(request_id);
-        if(buildRequest==null){
-            throw new ApiException("request not found");
+        if (!authUser.getRole().equals("ADMIN")) {
+            throw new ApiException("Only ADMIN can approve requests");
         }
 
-        Project project = projectRepository.findProjectById(buildRequest.getProject().getId());
-        Land land = landRepository.getLandById(buildRequest.getLand().getId());
+        BuildRequest buildRequest = buildRequestRepository.getBuildRequestById(requestId);
 
-        // why not :
-//        Project project = buildRequest.getProject();
-//        Land land = buildRequest.getLand();
-
-        if(project==null||land==null){
-            throw new ApiException("can not complete this process because the project or land not found");
+        if (buildRequest == null) {
+            throw new ApiException("Request not found");
         }
 
-        buildRequest.setStatus("approved");
+        Project project = buildRequest.getProject();
+        Land land = buildRequest.getLand();
+
+        if (project == null || land == null) {
+            throw new ApiException("Project or land not found");
+        }
+
+        buildRequest.setStatus("APPROVED");
         project.setLand(land);
         land.setProject(project);
 
@@ -201,7 +203,4 @@ public class BuildRequestService {
         landRepository.save(land);
         buildRequestRepository.save(buildRequest);
     }
-
-
-
 }

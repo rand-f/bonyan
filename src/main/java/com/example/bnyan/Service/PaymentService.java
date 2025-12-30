@@ -28,8 +28,8 @@ public class PaymentService {
     private final RestTemplate restTemplate;
 
     public PaymentResultDTO createPayment(PaymentRequestDTO request) {
-        try {
-            // Ensure amount ends with 0
+         try {
+             // Ensure amount ends with 0
             int amount = request.getAmount();
             if (amount % 10 != 0) {
                 amount = ((amount + 9) / 10) * 10;

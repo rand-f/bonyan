@@ -79,6 +79,41 @@ public class Configuration {
                                         "/api/v1/meeting/project/**",
                                         "/api/v1/meeting/delete/**").hasAuthority("ADMIN")
 
+                                // ===== TASK =====
+                                .requestMatchers("/api/v1/task/add",
+                                        "/api/v1/task/update/**").hasAuthority("SPECIALIST")
+                                .requestMatchers("/api/v1/task/get-by-project/**",
+                                        "/api/v1/task/get-by-status/**",
+                                        "/api/v1/task/get-due-today",
+                                        "/api/v1/task/get-overdue",
+                                        "/api/v1/task/get-upcoming",
+                                        "/api/v1/task/get-by-date-range",
+                                        "/api/v1/task/get-by-manager/**",
+                                        "/api/v1/task/get-completed",
+                                        "/api/v1/task/get-by-id/**").hasAnyAuthority("USER", "SPECIALIST")
+                                .requestMatchers("/api/v1/task/delete/**").hasAuthority("ADMIN")
+
+                                // ===== REVIEW =====
+                                .requestMatchers("/api/v1/review/add").hasAuthority("USER")
+                                .requestMatchers("/api/v1/review/get",
+                                        "/api/v1/review/specialist/**").hasAnyAuthority("USER", "SPECIALIST")
+                                .requestMatchers("/api/v1/review/delete/**").hasAuthority("ADMIN")
+
+                                // ===== LAND =====
+                                .requestMatchers("/api/v1/land/add",
+                                        "/api/v1/land/update/**",
+                                        "/api/v1/land/delete/**").hasAuthority("USER")
+                                .requestMatchers("/api/v1/land/get",
+                                        "/api/v1/land/get-by-id/**").hasAnyAuthority("USER", "ADMIN")
+
+                                // ===== BUILD REQUEST =====
+                                .requestMatchers("/api/v1/build-request/add").hasAuthority("USER")
+                                .requestMatchers("/api/v1/build-request/approve/**",
+                                        "/api/v1/build-request/reject/**").hasAnyAuthority("SPECIALIST", "ADMIN")
+                                .requestMatchers("/api/v1/build-request/get",
+                                        "/api/v1/build-request/get-by-id/**").hasAnyAuthority("USER", "ADMIN")
+
+
                                 .anyRequest().authenticated()
                         )
 

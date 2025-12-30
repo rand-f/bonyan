@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/task")
@@ -19,77 +20,75 @@ public class TaskController {
 
     /// CRUD endpoints
 
-    @GetMapping("/get")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.status(200).body(taskService.getAllTask());
+    @GetMapping("/get-all")
+    public ResponseEntity<List<Task>> getAll() {
+        return ResponseEntity.ok(taskService.getAllTasks());
     }
 
     @PostMapping("/add/{projectId}")
-    public ResponseEntity<?> add(@PathVariable Integer projectId, @RequestBody @Valid Task task) {
-
+    public ResponseEntity<ApiResponse> add(@PathVariable Integer projectId, @RequestBody @Valid Task task) {
         taskService.addTask(projectId, task);
-        return ResponseEntity.status(200).body(new ApiResponse("Task added"));
+        return ResponseEntity.ok(new ApiResponse("Task added"));
     }
 
     @PutMapping("/update/{taskId}")
-    public ResponseEntity<?> update(@PathVariable Integer taskId, @RequestBody @Valid Task task) {
-
+    public ResponseEntity<ApiResponse> update(@PathVariable Integer taskId, @RequestBody @Valid Task task) {
         taskService.updateTask(taskId, task);
-        return ResponseEntity.status(200).body(new ApiResponse("Task updated"));
+        return ResponseEntity.ok(new ApiResponse("Task updated"));
     }
 
     @DeleteMapping("/delete/{taskId}")
-    public ResponseEntity<?> delete(@PathVariable Integer taskId) {
-
+    public ResponseEntity<ApiResponse> delete(@PathVariable Integer taskId) {
         taskService.deleteTask(taskId);
-        return ResponseEntity.status(200).body(new ApiResponse("Task deleted"));
+        return ResponseEntity.ok(new ApiResponse("Task deleted"));
     }
-
 
     /// Extra endpoints
 
-
     @GetMapping("/get-by-project/{projectId}")
-    public ResponseEntity<?> getByProject(@PathVariable Integer projectId) {
-        return ResponseEntity.status(200).body(taskService.getTasksByProject(projectId));
+    public ResponseEntity<List<Task>> getByProject(@PathVariable Integer projectId) {
+        return ResponseEntity.ok(taskService.getTasksByProject(projectId));
     }
 
     @GetMapping("/get-by-status/{status}")
-    public ResponseEntity<?> getByStatus(@PathVariable String status) {
-        return ResponseEntity.status(200).body(taskService.getTasksByStatus(status));
+    public ResponseEntity<List<Task>> getByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(taskService.getTasksByStatus(status));
     }
 
     @GetMapping("/get-due-today")
-    public ResponseEntity<?> getDueToday() {
-        return ResponseEntity.status(200).body(taskService.getTasksDueToday());
+    public ResponseEntity<List<Task>> getDueToday() {
+        return ResponseEntity.ok(taskService.getTasksDueToday());
     }
 
     @GetMapping("/get-overdue")
-    public ResponseEntity<?> getOverdue() {
-        return ResponseEntity.status(200).body(taskService.getOverdueTasks());
+    public ResponseEntity<List<Task>> getOverdue() {
+        return ResponseEntity.ok(taskService.getOverdueTasks());
     }
 
     @GetMapping("/get-upcoming")
-    public ResponseEntity<?> getUpcoming() {
-        return ResponseEntity.status(200).body(taskService.getUpcomingTasks());
+    public ResponseEntity<List<Task>> getUpcoming() {
+        return ResponseEntity.ok(taskService.getUpcomingTasks());
     }
 
     @GetMapping("/get-by-date-range")
-    public ResponseEntity<?> getByDateRange(@RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
-
-        return ResponseEntity.status(200).body(taskService.getTasksByDateRange(startDate, endDate));
+    public ResponseEntity<List<Task>> getByDateRange(
+            @RequestParam LocalDateTime startDate,
+            @RequestParam LocalDateTime endDate) {
+        return ResponseEntity.ok(taskService.getTasksByDateRange(startDate, endDate));
     }
+
     @GetMapping("/get-by-manager/{managerId}")
-    public ResponseEntity<?> getByManager(@PathVariable Integer managerId) {
-        return ResponseEntity.status(200).body(taskService.getTasksByManager(managerId));
-    }
-    @GetMapping("/get-by-id/{taskId}")
-    public ResponseEntity<?> getById(@PathVariable Integer taskId) {
-        return ResponseEntity.status(200).body(taskService.getTaskById(taskId));
-    }
-    @GetMapping("/get-completed")
-    public ResponseEntity<?> getCompleted() {
-        return ResponseEntity.status(200).body(taskService.getCompletedTasks());
+    public ResponseEntity<List<Task>> getByManager(@PathVariable Integer managerId) {
+        return ResponseEntity.ok(taskService.getTasksByManager(managerId));
     }
 
+    @GetMapping("/get-by-id/{taskId}")
+    public ResponseEntity<Task> getById(@PathVariable Integer taskId) {
+        return ResponseEntity.ok(taskService.getTaskById(taskId));
+    }
+
+    @GetMapping("/get-completed")
+    public ResponseEntity<List<Task>> getCompleted() {
+        return ResponseEntity.ok(taskService.getCompletedTasks());
+    }
 }

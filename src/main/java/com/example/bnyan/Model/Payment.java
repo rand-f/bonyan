@@ -41,6 +41,7 @@ public class Payment {
         @Column(columnDefinition = "TIMESTAMP NOT NULL", updatable = false)
         private LocalDateTime createdAt;
 
+
         // who paid
         @ManyToOne
         @JsonIgnore

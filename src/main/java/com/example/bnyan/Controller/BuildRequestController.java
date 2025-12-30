@@ -2,11 +2,15 @@ package com.example.bnyan.Controller;
 
 import com.example.bnyan.Api.ApiResponse;
 import com.example.bnyan.Model.BuildRequest;
+import com.example.bnyan.Model.User;
 import com.example.bnyan.Service.BuildRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/build-request")
@@ -17,60 +21,77 @@ public class BuildRequestController {
 
     /// CRUD endpoints
 
-    @GetMapping("/get")
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.status(200).body(buildRequestService.getAllBuildRequests());
+    @GetMapping("/get-all")
+    public ResponseEntity<List<BuildRequest>> getAll(@AuthenticationPrincipal User authUser) {
+        return ResponseEntity.ok(buildRequestService.getAllBuildRequests(authUser));
     }
 
-    @PostMapping("/add/{customerId}/{landId}")
-    public ResponseEntity<?> add(@PathVariable Integer customerId, @PathVariable Integer landId, @RequestBody @Valid BuildRequest buildRequest) {
+    @PostMapping("/add/{landId}")
+    public ResponseEntity<ApiResponse> add(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable Integer landId,
+            @RequestBody @Valid BuildRequest buildRequest) {
 
-        buildRequestService.add(customerId, landId, buildRequest);
-        return ResponseEntity.status(200).body(new ApiResponse("Build request added"));
+        buildRequestService.add(authUser, landId, buildRequest);
+        return ResponseEntity.ok(new ApiResponse("Build request added"));
     }
 
-    @PutMapping("/update-status/{requestId}/{adminId}/{status}")
-    public ResponseEntity<?> updateStatus(@PathVariable Integer requestId, @PathVariable Integer adminId, @PathVariable String status) {
+    @PutMapping("/update-status/{requestId}/{status}")
+    public ResponseEntity<ApiResponse> updateStatus(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable Integer requestId,
+            @PathVariable String status) {
 
-        buildRequestService.updateStatus(requestId, adminId, status);
-        return ResponseEntity.status(200).body(new ApiResponse("Build request status updated"));
+        buildRequestService.updateStatus(authUser, requestId, status);
+        return ResponseEntity.ok(new ApiResponse("Build request status updated"));
     }
 
-    @DeleteMapping("/delete/{requestId}/{customerId}")
-    public ResponseEntity<?> delete(@PathVariable Integer requestId, @PathVariable Integer customerId) {
+    @DeleteMapping("/delete/{requestId}")
+    public ResponseEntity<ApiResponse> delete(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable Integer requestId) {
 
-        buildRequestService.delete(requestId, customerId);
-        return ResponseEntity.status(200).body(new ApiResponse("Build request deleted"));
+        buildRequestService.delete(authUser, requestId);
+        return ResponseEntity.ok(new ApiResponse("Build request deleted"));
     }
 
-
-    /// Extra endpoints (logic)
+    /// Extra endpoints
 
     @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
-        return ResponseEntity.status(200).body(buildRequestService.getBuildRequestById(id));
+    public ResponseEntity<BuildRequest> getById(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable Integer id) {
+
+        return ResponseEntity.ok(buildRequestService.getBuildRequestById(authUser, id));
     }
 
     @GetMapping("/get-by-status/{status}")
-    public ResponseEntity<?> getByStatus(@PathVariable String status) {
-        return ResponseEntity.status(200).body(buildRequestService.getBuildRequestsByStatus(status));
+    public ResponseEntity<List<BuildRequest>> getByStatus(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable String status) {
+
+        return ResponseEntity.ok(buildRequestService.getBuildRequestsByStatus(authUser, status));
     }
 
-    @GetMapping("/get-by-customer-id/{customerId}")
-    public ResponseEntity<?> getByCustomerId(@PathVariable Integer customerId) {
-        return ResponseEntity.status(200).body(buildRequestService.getBuildRequestsByCustomerId(customerId));
+    @GetMapping("/my-build-requests")
+    public ResponseEntity<List<BuildRequest>> getMyRequests(@AuthenticationPrincipal User authUser) {
+        return ResponseEntity.ok(buildRequestService.getMyBuildRequests(authUser));
     }
 
-    @GetMapping("/get-by-land-id/{landId}")
-    public ResponseEntity<?> getByLandId(@PathVariable Integer landId) {
-        return ResponseEntity.status(200).body(buildRequestService.getBuildRequestsByLandId(landId));
+    @GetMapping("/get-by-land/{landId}")
+    public ResponseEntity<List<BuildRequest>> getByLand(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable Integer landId) {
+
+        return ResponseEntity.ok(buildRequestService.getBuildRequestsByLandId(authUser, landId));
     }
 
-    // for admin
     @PutMapping("/approve/{requestId}")
-    public ResponseEntity<?> approveRequest(@PathVariable Integer requestId) {
+    public ResponseEntity<ApiResponse> approveRequest(
+            @AuthenticationPrincipal User authUser,
+            @PathVariable Integer requestId) {
 
-        buildRequestService.approveRequest(requestId);
-        return ResponseEntity.status(200).body(new ApiResponse("Build request is approved"));
+        buildRequestService.approveRequest(authUser, requestId);
+        return ResponseEntity.ok(new ApiResponse("Build request approved"));
     }
 }

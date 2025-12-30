@@ -1,12 +1,8 @@
 package com.example.bnyan.ServiceTest;
 
 import com.example.bnyan.Api.ApiException;
-import com.example.bnyan.Model.Customer;
-import com.example.bnyan.Model.Review;
-import com.example.bnyan.Model.Specialist;
-import com.example.bnyan.Repository.CustomerRepository;
-import com.example.bnyan.Repository.ReviewRepository;
-import com.example.bnyan.Repository.SpecialistRepository;
+import com.example.bnyan.Model.*;
+import com.example.bnyan.Repository.*;
 import com.example.bnyan.Service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,34 +30,50 @@ public class ReviewServiceTest {
     private CustomerRepository customerRepository;
     @Mock
     private SpecialistRepository specialistRepository;
+    @Mock
+    private ProjectRepository projectRepository;
 
-    private Review review1;
+    private User customerUser;
+    private User adminUser;
     private Customer customer;
     private Specialist specialist;
-    private List<Review> reviewList;
+    private Project project;
+    private Review review;
 
     @BeforeEach
     void setup() {
+        customerUser = new User();
+        customerUser.setId(1);
+        customerUser.setRole("USER");
+
+        adminUser = new User();
+        adminUser.setId(2);
+        adminUser.setRole("ADMIN");
+
         customer = new Customer();
         customer.setId(1);
 
         specialist = new Specialist();
-        specialist.setId(1);
+        specialist.setId(10);
 
-        review1 = new Review();
-        review1.setId(1);
-        review1.setRate("5");
-        review1.setComment("Great job");
-        review1.setCustomer(customer);
-        review1.setSpecialist(specialist);
+        project = new Project();
+        project.setSpecialists(Set.of(specialist));
+        project.setCustomer(customer);
 
-        reviewList = new ArrayList<>();
-        reviewList.add(review1);
+        review = new Review();
+        review.setId(100);
+        review.setCustomer(customer);
+        review.setSpecialist(specialist);
+        review.setRate("5");
+        review.setComment("Great!");
     }
+
 
     @Test
     public void getAllReviewsSuccessTest() {
-        when(reviewRepository.findAll()).thenReturn(reviewList);
+        List<Review> list = new ArrayList<>();
+        list.add(review);
+        when(reviewRepository.findAll()).thenReturn(list);
 
         List<Review> result = reviewService.getAllReviews();
 
@@ -69,68 +82,150 @@ public class ReviewServiceTest {
     }
 
     @Test
+    public void getAllReviewsEmptyTest() {
+        when(reviewRepository.findAll()).thenReturn(new ArrayList<>());
+        assertThrows(ApiException.class, () -> reviewService.getAllReviews());
+    }
+
+
+    @Test
     public void addReviewSuccessTest() {
-        when(customerRepository.getCustomerById(1)).thenReturn(customer);
-        when(specialistRepository.getSpecialistById(1)).thenReturn(specialist);
-        when(reviewRepository.getReviewByCustomerIdAndSpecialistId(1, 1)).thenReturn(null);
+        when(customerRepository.getCustomerById(customerUser.getId())).thenReturn(customer);
+        when(specialistRepository.findSpecialistById(specialist.getId())).thenReturn(specialist);
+        when(projectRepository.findProjectsByCustomer(customer)).thenReturn(List.of(project));
+        when(reviewRepository.getReviewByCustomerIdAndSpecialistId(customer.getId(), specialist.getId()))
+                .thenReturn(null);
 
-        reviewService.add(1, 1, review1);
+        Review newReview = new Review();
+        reviewService.add(customerUser, specialist.getId(), newReview);
 
-        verify(reviewRepository, times(1)).save(review1);
+        assertEquals(customer, newReview.getCustomer());
+        assertEquals(specialist, newReview.getSpecialist());
+        verify(reviewRepository, times(1)).save(newReview);
     }
 
     @Test
-    public void addReviewDuplicateTest() {
-        when(customerRepository.getCustomerById(1)).thenReturn(customer);
-        when(specialistRepository.getSpecialistById(1)).thenReturn(specialist);
-        when(reviewRepository.getReviewByCustomerIdAndSpecialistId(1, 1)).thenReturn(review1);
-
-        assertThrows(ApiException.class, () -> {
-            reviewService.add(1, 1, review1);
-        });
+    public void addReviewUnauthorizedUserTest() {
+        User otherUser = new User();
+        otherUser.setRole("ADMIN");
+        assertThrows(ApiException.class, () -> reviewService.add(otherUser, specialist.getId(), new Review()));
     }
+
+    @Test
+    public void addReviewNotWorkedWithSpecialistTest() {
+        when(customerRepository.getCustomerById(customerUser.getId())).thenReturn(customer);
+        when(specialistRepository.findSpecialistById(specialist.getId())).thenReturn(specialist);
+        when(projectRepository.findProjectsByCustomer(customer)).thenReturn(new ArrayList<>()); // no projects
+
+        assertThrows(ApiException.class, () -> reviewService.add(customerUser, specialist.getId(), new Review()));
+    }
+
 
     @Test
     public void updateReviewSuccessTest() {
-        when(reviewRepository.getReviewById(1)).thenReturn(review1);
+        when(reviewRepository.getReviewById(review.getId())).thenReturn(review);
 
-        Review newReviewData = new Review();
-        newReviewData.setRate("4");
-        newReviewData.setComment("Updated comment");
+        Review updated = new Review();
+        updated.setRate("4");
+        updated.setComment("Good");
 
-        reviewService.update(1, newReviewData);
+        reviewService.update(customerUser, review.getId(), updated);
 
-        assertEquals(4, review1.getRate());
-        assertEquals("Updated comment", review1.getComment());
-        verify(reviewRepository, times(1)).save(review1);
+        assertEquals("4", review.getRate());
+        assertEquals("Good", review.getComment());
+        verify(reviewRepository, times(1)).save(review);
     }
+
+    @Test
+    public void updateReviewUnauthorizedTest() {
+        when(reviewRepository.getReviewById(review.getId())).thenReturn(review);
+
+        User otherUser = new User();
+        otherUser.setId(99);
+        otherUser.setRole("USER");
+
+        assertThrows(ApiException.class, () -> reviewService.update(otherUser, review.getId(), new Review()));
+    }
+
 
     @Test
     public void deleteReviewSuccessTest() {
-        when(reviewRepository.getReviewById(1)).thenReturn(review1);
+        when(reviewRepository.getReviewById(review.getId())).thenReturn(review);
 
-        reviewService.delete(1);
+        reviewService.delete(customerUser, review.getId());
 
-        verify(reviewRepository, times(1)).delete(review1);
+        verify(reviewRepository, times(1)).delete(review);
     }
 
     @Test
+    public void deleteReviewUnauthorizedTest() {
+        when(reviewRepository.getReviewById(review.getId())).thenReturn(review);
+
+        User otherUser = new User();
+        otherUser.setId(99);
+        otherUser.setRole("USER");
+
+        assertThrows(ApiException.class, () -> reviewService.delete(otherUser, review.getId()));
+    }
+
+
+    @Test
     public void getReviewsBySpecialistSuccessTest() {
-        when(specialistRepository.getSpecialistById(1)).thenReturn(specialist);
-        when(reviewRepository.getReviewsBySpecialistId(1)).thenReturn(reviewList);
+        when(specialistRepository.getSpecialistById(specialist.getId())).thenReturn(specialist);
+        when(reviewRepository.getReviewsBySpecialistId(specialist.getId())).thenReturn(List.of(review));
 
-        List<Review> result = reviewService.getReviewsBySpecialist(1);
+        List<Review> result = reviewService.getReviewsBySpecialist(specialist.getId());
+        assertEquals(1, result.size());
+    }
 
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.get(0).getSpecialist().getId());
+    @Test
+    public void getReviewsBySpecialistNotFoundTest() {
+        when(specialistRepository.getSpecialistById(specialist.getId())).thenReturn(null);
+        assertThrows(ApiException.class, () -> reviewService.getReviewsBySpecialist(specialist.getId()));
+    }
+
+
+    @Test
+    public void getReviewByIdSuccessTest() {
+        when(reviewRepository.getReviewById(review.getId())).thenReturn(review);
+
+        Review result = reviewService.getReviewById(review.getId());
+        assertEquals(review, result);
     }
 
     @Test
     public void getReviewByIdNotFoundTest() {
-        when(reviewRepository.getReviewById(99)).thenReturn(null);
+        when(reviewRepository.getReviewById(review.getId())).thenReturn(null);
+        assertThrows(ApiException.class, () -> reviewService.getReviewById(review.getId()));
+    }
 
-        assertThrows(ApiException.class, () -> {
-            reviewService.getReviewById(99);
-        });
+    @Test
+    public void getSpecialistReviewsSuccessTest() {
+        when(specialistRepository.findSpecialistById(specialist.getId())).thenReturn(specialist);
+        when(reviewRepository.findReviewsBySpecialist(specialist)).thenReturn(List.of(review));
+
+        List<Review> result = reviewService.getSpecialistReviews(specialist.getId());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void getSpecialistReviewsNotFoundTest() {
+        when(specialistRepository.findSpecialistById(specialist.getId())).thenReturn(null);
+        assertThrows(ApiException.class, () -> reviewService.getSpecialistReviews(specialist.getId()));
+    }
+
+    @Test
+    public void getReviewsByCustomerSuccessTest() {
+        when(customerRepository.getCustomerById(customer.getId())).thenReturn(customer);
+        when(reviewRepository.findReviewsByCustomer(customer)).thenReturn(List.of(review));
+
+        List<Review> result = reviewService.getReviewsByCustomer(customer.getId());
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void getReviewsByCustomerNotFoundTest() {
+        when(customerRepository.getCustomerById(customer.getId())).thenReturn(null);
+        assertThrows(ApiException.class, () -> reviewService.getReviewsByCustomer(customer.getId()));
     }
 }
