@@ -43,14 +43,14 @@ public class SpecialistRequestController {
     }
 
     //customer
-    @PostMapping("/add-specialist/{project_id}/{spec_id}")
+    @PutMapping("/add-specialist/{project_id}/{spec_id}")
     public ResponseEntity<?> addSpecialistRequest(@AuthenticationPrincipal User user,@PathVariable Integer project_id, @PathVariable Integer spec_id, @RequestBody SpecialistRequest request) {
         specialistRequestService.addSpecialistRequest(user.getId(),request, project_id, spec_id);
         return ResponseEntity.ok(new ApiResponse("request added successfully"));
     }
 
     //customer
-    @PostMapping("/add-manager/{project_id}/{manager_id}")
+    @PutMapping("/add-manager/{project_id}/{manager_id}")
     public ResponseEntity<?> addManagerRequest(@AuthenticationPrincipal User user,@PathVariable Integer project_id, @PathVariable Integer manager_id, @RequestBody SpecialistRequest request) {
         specialistRequestService.addManagerRequest(user.getId(),request, project_id, manager_id);
         return ResponseEntity.ok(new ApiResponse("request added successfully"));

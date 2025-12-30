@@ -8,6 +8,7 @@ import com.example.bnyan.Repository.SpecialistRepository;
 import com.example.bnyan.Repository.SpecialistRequestRepository;
 import com.example.bnyan.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,7 +37,8 @@ public class SpecialistService {
 
         User user = new User();
         user.setUsername(specialistDTO.getUsername());
-        user.setPassword(specialistDTO.getPassword());
+        String hash = new BCryptPasswordEncoder().encode(specialistDTO.getPassword());
+        user.setPassword(hash);
         user.setEmail(specialistDTO.getEmail());
         user.setPhoneNumber(specialistDTO.getPhoneNumber());
         user.setFullName(specialistDTO.getFullName());
@@ -203,13 +205,13 @@ public class SpecialistService {
             throw new ApiException("user  not fond");
         }
 
-        return specialistRepository.findSpecialistBySpeciality("GENERAL_CONTRACTOR");
+        return specialistRepository.findSpecialistBySpeciality("CONTRACTOR");
     }
 
     public List<SpecialistRequest>getMyRequests(Integer user_id){
         User user = userRepository.getUserById(user_id);
         if (user==null){
-            throw new ApiException("user  not fond");
+            throw new ApiException("user not fond");
         }
 
         Specialist specialist = specialistRepository.findSpecialistById(user_id);

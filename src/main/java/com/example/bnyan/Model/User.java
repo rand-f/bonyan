@@ -33,7 +33,7 @@ public class User implements UserDetails {
     @NotEmpty(message = "username must be filled")
     @Pattern(regexp = "^[A-Za-z]{3,20}( [A-Za-z]{3,20})+$",
             message = "fullName must contain only letters and a space between first and last name")
-    @Column(columnDefinition = "varchar(40) not null unique")
+    @Column(columnDefinition = "varchar(40) not null")
     private String fullName;
 
     @NotEmpty(message = "password must be filled")

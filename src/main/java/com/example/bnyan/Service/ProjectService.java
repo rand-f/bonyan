@@ -71,6 +71,8 @@ public class ProjectService {
             throw new ApiException("project not found");
         }
 
+        project.setCustomer(customer);
+
         ProjectAIDTO aiDTO = new ProjectAIDTO();
         aiDTO.setDescription(project.getDescription());
         aiDTO.setStartDate(project.getStartDate());
@@ -80,7 +82,7 @@ public class ProjectService {
 
         // if user did not specify budget AI will
         if(projectDTO.getBudget()==null){
-            PredictionBudgetDTO budgetDTO= predictBudget(user_id,aiDTO);
+            PredictionBudgetDTO budgetDTO= predictBudget(user_id, project.getId(), aiDTO);
             project.setBudget(budgetDTO.getMaxBudget()+budgetDTO.getMinBudget()*0.5);
             aiDTO.setBudget(budgetDTO.getMaxBudget()+budgetDTO.getMinBudget()*0.5);
         }else{
@@ -90,7 +92,7 @@ public class ProjectService {
 
         // if user did not specify time AI will
         if(projectDTO.getProjectPeriod()==null){
-            PredictionTimeDTO timeDTO = predictTime(user_id,aiDTO);
+            PredictionTimeDTO timeDTO = predictTime(user_id,project.getId(),aiDTO);
             project.setDuration(timeDTO.getExpectedProjectPeriod());
             project.setExpectedEndDate(projectDTO.getStartDate().plusDays(projectDTO.getProjectPeriod()));
         }else{
@@ -102,24 +104,43 @@ public class ProjectService {
         project.setStartDate(projectDTO.getStartDate());
 
         project.setStatus("preparing");
-        project.setCustomer(customer);
         project.setCreated_at(LocalDateTime.now());
         projectRepository.save(project);
     }
 
-    public PredictionBudgetDTO predictBudget(Integer customer_id, ProjectAIDTO aiDTO){
+    public PredictionBudgetDTO predictBudget(Integer customer_id, Integer project_id,ProjectAIDTO aiDTO){
         Customer customer= customerRepository.getCustomerById(customer_id);
         if(customer==null){
             throw new ApiException("Customer not found");
         }
+
+        Project project = projectRepository.findProjectById(project_id);
+        if(project==null){
+            throw new ApiException("project not found");
+        }
+
+        if(project.getCustomer().getId()!=customer.getId()){
+            throw new ApiException("unauthorized");
+        }
+
         return aiService.predictBudget(aiDTO);
     }
 
-    public PredictionTimeDTO predictTime(Integer customer_id, ProjectAIDTO aiDTO){
+    public PredictionTimeDTO predictTime(Integer customer_id,Integer project_id, ProjectAIDTO aiDTO){
         Customer customer= customerRepository.getCustomerById(customer_id);
         if(customer==null){
             throw new ApiException("Customer not found");
         }
+
+        Project project = projectRepository.findProjectById(project_id);
+        if(project==null){
+            throw new ApiException("project not found");
+        }
+
+        if(project.getCustomer().getId()!=customer.getId()){
+            throw new ApiException("unauthorized");
+        }
+
         return aiService.predictTime(aiDTO);
     }
 
