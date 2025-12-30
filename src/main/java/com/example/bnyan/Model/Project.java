@@ -27,24 +27,26 @@ public class Project {
     private Integer id;
 
     @Positive(message = "budget must be a positive value")
-    @NotNull(message = "budget can not be empty")
-    @Column(columnDefinition = "double not null")
+    //@NotNull(message = "budget can not be empty")
+    @Column(columnDefinition = "double")
     private Double budget;
 
-    @NotEmpty(message = "project description can not be empty")
-    @Column(columnDefinition = "varchar(500) not null")
+    //@NotEmpty(message = "project description can not be empty")
+    @Column(columnDefinition = "varchar(500)")
     private String description;
 
-    @NotNull(message = "start date is required")
+    //@NotNull(message = "start date is required")
+    @Column
     private LocalDate startDate;
 
-    @Positive(message = "duration must be a positive value")
+   // @Positive(message = "duration must be a positive value")
+   @Column
     private Integer duration;
 
     @Pattern(regexp = "^(preparing|on going|completed)")
     private String status;
 
-    @NotNull(message = "expected end date is required")
+   // @NotNull(message = "expected end date is required")
     private LocalDate expectedEndDate;
     private LocalDateTime created_at;
 
@@ -68,7 +70,8 @@ public class Project {
     @JsonIgnore
     private Set<SpecialistRequest>requests;
 
-    @OneToOne
+    @OneToOne(mappedBy = "project",cascade = CascadeType.ALL)
+    @JoinColumn()
     @JsonIgnore
     private BuildRequest buildRequest;
 

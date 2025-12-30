@@ -38,42 +38,47 @@ public class BuildRequestService {
 
     public void add(User authUser, Integer landId, ProjectDTO projectDTO) {
 
-        BuildRequest buildRequest = new BuildRequest();
         if (!authUser.getRole().equals("USER")) {
             throw new ApiException("Only customers can create build requests");
         }
 
         Customer customer = customerRepository.getCustomerById(authUser.getId());
+        if (customer == null) {
+            throw new ApiException("Customer not found");
+        }
 
         Land land = landRepository.getLandById(landId);
         if (land == null) {
             throw new ApiException("Land not found");
         }
 
-        BuildRequest existing =
-                buildRequestRepository.getBuildRequestByLandId(landId);
-
+        BuildRequest existing = buildRequestRepository.getBuildRequestByLandId(landId);
         if (existing != null) {
             throw new ApiException("Build request already exists for this land");
         }
 
+        BuildRequest buildRequest = new BuildRequest();
         buildRequest.setCustomer(customer);
         buildRequest.setLand(land);
-        buildRequest.setStatus("processing");
+        buildRequest.setStatus("PROCESSING");
         buildRequest.setCreatedAt(LocalDateTime.now());
 
         Project project = new Project();
         project.setDescription(projectDTO.getDescription());
-        project.setBudget(project.getBudget());
-        project.setDuration(project.getDuration());
+        project.setBudget(projectDTO.getBudget());
+        project.setDuration(projectDTO.getDuration());
         project.setStartDate(projectDTO.getStartDate());
+        project.setExpectedEndDate(projectDTO.getExpectedEndDate());
+        project.setStatus("preparing");
+        project.setCreated_at(LocalDateTime.now());
         project.setCustomer(customer);
+        project.setLand(land);
         project.setBuildRequest(buildRequest);
+
         buildRequest.setProject(project);
-        projectRepository.save(project);
+
         buildRequestRepository.save(buildRequest);
     }
-
     public void updateStatus(User authUser, Integer requestId, String status) {
 
         if (!authUser.getRole().equals("ADMIN")) {

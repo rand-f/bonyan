@@ -22,25 +22,25 @@ public class LandController {
     /// CRUD endpoints
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<Land>> getAll(@AuthenticationPrincipal User authUser) {
+    public ResponseEntity<?> getAll(@AuthenticationPrincipal User authUser) {
         return ResponseEntity.ok(landService.getAllLands(authUser));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> add(@AuthenticationPrincipal User authUser, @RequestBody @Valid Land land) {
+    public ResponseEntity<?> add(@AuthenticationPrincipal User authUser, @RequestBody @Valid Land land) {
         landService.add(authUser, land);
         return ResponseEntity.ok(new ApiResponse("Land added"));
     }
 
     @PutMapping("/update/{landId}")
-    public ResponseEntity<ApiResponse> update(@AuthenticationPrincipal User authUser, @PathVariable Integer landId, @RequestBody @Valid Land land) {
+    public ResponseEntity<?> update(@AuthenticationPrincipal User authUser, @PathVariable Integer landId, @RequestBody @Valid Land land) {
 
         landService.update(authUser, landId, land);
         return ResponseEntity.ok(new ApiResponse("Land updated"));
     }
 
     @DeleteMapping("/delete/{landId}")
-    public ResponseEntity<ApiResponse> delete(@AuthenticationPrincipal User authUser, @PathVariable Integer landId) {
+    public ResponseEntity<?> delete(@AuthenticationPrincipal User authUser, @PathVariable Integer landId) {
         landService.delete(authUser, landId);
         return ResponseEntity.ok(new ApiResponse("Land deleted"));
     }
@@ -48,7 +48,7 @@ public class LandController {
     /// Extra endpoints
 
     @GetMapping("/my-lands")
-    public ResponseEntity<List<Land>> getMyLands(@AuthenticationPrincipal User authUser) {
+    public ResponseEntity<?> getMyLands(@AuthenticationPrincipal User authUser) {
         return ResponseEntity.ok(landService.getMyLands(authUser));
     }
 
