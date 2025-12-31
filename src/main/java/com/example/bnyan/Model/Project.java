@@ -63,6 +63,7 @@ public class Project {
     private ProjectManager projectManager;
 
     @ManyToOne
+    @MapsId
     @JsonIgnore
     private Customer customer;
 

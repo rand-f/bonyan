@@ -26,7 +26,7 @@ public class SpecialistRequestService {
         return requestRepository.findAll();
     }
 
-    public void addSpecialistRequest(Integer user_id,SpecialistRequest request, Integer project_id, Integer spec_id) {
+    public void addSpecialistRequest(Integer user_id, Integer project_id, Integer spec_id) {
 
         User user = userRepository.getUserById(user_id);
         if(user==null){
@@ -50,9 +50,11 @@ public class SpecialistRequestService {
             throw new ApiException("this project request can not be assigned to the specialist");
         }
 
+        SpecialistRequest request = new SpecialistRequest();
+
         request.setProject(project);
-        project.getRequests().add(request);
         request.setSpecialist(specialist);
+        project.getRequests().add(request);
         specialist.getRequests().add(request);
 
         projectRepository.save(project);

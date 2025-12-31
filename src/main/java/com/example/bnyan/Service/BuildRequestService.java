@@ -73,10 +73,12 @@ public class BuildRequestService {
         project.setCreated_at(LocalDateTime.now());
         project.setCustomer(customer);
         project.setLand(land);
+
+        project.setBuildRequest(buildRequest);
+        buildRequest.setProject(project);
         project.setBuildRequest(buildRequest);
 
-        buildRequest.setProject(project);
-
+        projectRepository.save(project);
         buildRequestRepository.save(buildRequest);
     }
     public void updateStatus(User authUser, Integer requestId, String status) {

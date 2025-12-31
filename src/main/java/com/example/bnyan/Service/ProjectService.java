@@ -66,7 +66,7 @@ public class ProjectService {
             throw new ApiException("can not start project because this project request is not approved");
         }
 
-        Project project = buildRequest.getProject();
+        Project project = projectRepository.findProjectById(buildRequest.getProject().getId());
         if(project==null){
             throw new ApiException("project not found");
         }

@@ -26,6 +26,8 @@ public class PromptBuilder {
             Requirements:
             - Return ONLY valid JSON.
             - JSON format: {"answer":"..."}
+            - When asked in Arabic answer must be in Arabic.
+            - The answer must be in one paragraph and no bold test.
             """.formatted(
                 question
         );
