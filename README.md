@@ -1,270 +1,136 @@
-🏗️ Bnyan - Construction Project Management System
+🏗️ Bnyan – Construction Project Management System
+📌 System Description (الوصف العربي)
 
-Bnyan API Documentation
-Overview
-Bnyan is a comprehensive web-based construction project management platform developed as a Tuwaiq final project. The system provides a unified digital solution for managing construction projects involving multiple stakeholders including landowners, architects, engineers, interior designers, project managers, and construction companies.
+النظام يحتوي على نوعين أساسيين من المستخدمين: الزبون والمتخصص. الزبون هو شخص يمكنه شراء أو استئجار المباني، المعارض، الوحدات السكنية، أو الأراضي التي يعرضها زبون آخر. كما يمكن للزبون تسجيل أملاكه الخاصة، سواء كانت مباني كاملة، جزء منها مثل الشقق، أو أراضٍ، ليتمكن من بيعها أو عرضها للإيجار.
 
-Key Features
-Project Lifecycle Management: End-to-end tracking from land registration to project completion
+أهم خاصية للنظام هي المساعدة في أعمال البناء، حيث يمكن للمستخدم تسجيل أرض، وبعد التحقق والموافقة عليها، يمكنه بدء مشروع جديد. عند بدء المشروع، يقوم المستخدم بتسجيل وصف المشروع، تاريخ البداية، الميزانية، والمدة المتوقعة للانتهاء.
 
-Multi-stakeholder Coordination: Seamless collaboration between customers, specialists, and project managers
+يحتوي النظام على خصائص ذكاء اصطناعي متقدمة، حيث يقوم أولاً بتحليل وصف المشروع لإنتاج تقدير للميزانية والمدة الزمنية المتوقعة للانتهاء. كما يمكنه توليد صورة توضيحية تتوقع الشكل النهائي للمشروع لمساعدة المستخدم على تصور النتيجة. بالإضافة إلى ذلك، يقوم الذكاء الاصطناعي تلقائيًا بملء طلبات الانضمام للمتخصصين، مثل المهندسين والمصممين، مع تحديد وصف الطلب والمدة المتوقعة للبدء والانتهاء لكل متخصص، لتسهيل عملية اختيار الفريق المناسب للمشروع.
 
-Task Management: Comprehensive task tracking with status updates and deadlines
+من خلال المنصة، يستطيع الزبون الوصول إلى تقييمات المتخصصين وخبراتهم لاختيار الأنسب للعمل على مشروعه. كما يمكنه جدولة اجتماعات عبر Zoom معهم، ودفع مستحقاتهم مباشرة من خلال المنصة. إضافة إلى ذلك، تقوم المنصة بإرسال إشعارات ورسائل عبر البريد الإلكتروني عند وصول الطلبات أو عند قبولها أو رفضها، سواء كانت طلبات انضمام المتخصصين أو طلبات البيع، الشراء، والاستئجار الخاصة بالزبائن.
 
-Real-time Communication: Meeting scheduling and coordination tools
+بفضل هذه الخصائص، توفر المنصة تجربة متكاملة لإدارة المشاريع العقارية وأعمال البناء، تجمع بين التقديرات الذكية، سهولة اختيار المتخصصين، متابعة الأعمال، وإتمام المعاملات المالية والإشعارات بكل شفافية وسلاسة.
 
-AI-Powered Insights: Budget prediction, time estimation, and intelligent Q&A
+🚀 Overview
 
-Review System: Specialist rating and feedback mechanism
+Bnyan is a comprehensive construction project management platform supporting:
 
-Property Management: Built property listing and management
+customers
 
-All credit goes to Group members : Mohammed Alrashedi, Rand Abalkhail , and Asrar Fallatah.
+specialists
 
+project managers
 
-![Banner](https://img.shields.io/badge/Bnyan-Construction_Management-blue)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.0-brightgreen)
-![Java](https://img.shields.io/badge/Java-17-orange)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-blue)
-![Status](https://img.shields.io/badge/Status-Active-success)
+administrators
 
-## 📋 Table of Contents
-- [🌟 Project Overview](#project-overview)
-- [🎯 Key Objectives](#key-objectives)
-- [🚀 Features](#features)
-- [🏗️ System Architecture](#system-architecture)
-- [🛠️ Technologies Used](#technologies-used)
-- [🔧 Installation & Setup](#installation-setup)
-- [📊 API Documentation](#api-documentation)
-- [🎨 UI/UX Design](#uiux-design)
-- [👥 Team & Contributions](#team-contributions)
-- [📁 Project Structure](#project-structure)
-- [🔐 Security Features](#security-features)
-- [📈 Future Roadmap](#future-roadmap)
-- [🤝 Contributing](#contributing)
-- [📄 License](#license)
-- [📞 Contact](#contact)
+It enables:
 
-## 🌟 Project Overview
+real-estate listing and management
 
-**Bnyan** is a comprehensive Construction Project Management System designed to revolutionize how construction projects are managed, tracked, and executed. Built with Spring Boot, this platform serves as a centralized hub connecting all stakeholders in the construction industry - from customers and specialists to project managers and administrators.
+end-to-end construction project management
 
-### 🎯 Key Objectives
-- **🔗 Centralized Coordination** - Unify all construction stakeholders on a single platform
-- **📈 Real-time Tracking** - Live updates on project progress and milestones
-- **🤝 Enhanced Collaboration** - Seamless communication between all parties
-- **💰 Financial Transparency** - Clear tracking of budgets and payments
-- **🕒 Time Optimization** - Efficient scheduling and resource allocation
-- **📋 Quality Assurance** - Systematic review and approval workflows
+AI-assisted estimation and image generation
 
-## 🚀 Features
+online payments
 
-### 👤 **User Management Module**
-![User Management](https://img.shields.io/badge/Module-User_Management-4A90E2)
-- 🔐 **Multi-role Authentication System** (Customer, Specialist, Project Manager, Admin)
-- 👤 **Profile Management** with document verification
-- 🛡️ **Role-Based Access Control** (RBAC)
-- 📱 **Session Management** with secure token-based authentication
+meetings and communication
 
-### 🏢 **Project Management Module**
-![Project Management](https://img.shields.io/badge/Module-Project_Management-7ED321)
-- 📅 **End-to-End Project Lifecycle Management**
-- 🎯 **Task Assignment & Progress Tracking**
-- 📊 **Timeline & Milestone Management**
-- 📁 **Document Sharing & Version Control**
-- 💰 **Budget Monitoring & Alerts**
+role-based secure access
 
-### 🛠️ **Specialist Management Module**
-![Specialist Management](https://img.shields.io/badge/Module-Specialist_Management-FF6B6B)
-- 📝 **Specialist Registration & Verification**
-- 🏷️ **Skill Categorization & Certification Tracking**
-- 🔍 **Intelligent Specialist Matching Algorithm**
-- 📅 **Availability Management & Scheduling**
-- ⭐ **Performance Tracking & Review System**
+This project was developed as part of Tuwaiq Academy Final Project.
 
-### 💼 **Customer Portal**
-![Customer Portal](https://img.shields.io/badge/Module-Customer_Portal-9B59B6)
-- 🏗️ **Project Request & Submission System**
-- 👀 **Real-time Project Monitoring**
-- 💬 **Direct Communication with Teams**
-- 📋 **Document & Contract Management**
-- ⭐ **Service Rating & Feedback System**
+👥 Credit: Mohammed Alrashedi – Rand Abalkhail – Asrar Fallatah
 
-### 💰 **Financial Module**
-![Financial Module](https://img.shields.io/badge/Module-Financial-FFD166)
-- 💳 **Secure Payment Processing Integration**
-- 🧾 **Automated Invoice Generation**
-- 📈 **Budget Tracking & Expense Management**
-- 🔔 **Payment Reminder & Notification System**
-- 📊 **Financial Reporting & Analytics**
+🔗 Important Links
+Item	Link
+Postman API Documentation	https://documenter.getpostman.com/view/50792493/2sBXVbJZNj
 
-### 📅 **Meeting & Communication Module**
-![Meeting Module](https://img.shields.io/badge/Module-Meeting_Management-06D6A0)
-- 🗓️ **Virtual Meeting Scheduling System**
-- 💬 **Real-time Chat & Instant Messaging**
-- 📧 **Email Notification System**
-- 📋 **Meeting Minutes & Action Items Tracking**
-- 📎 **Document Sharing During Meetings**
+Figma Prototype	https://www.figma.com/proto/0mdh83LYYxN3GfbdImGXXi/Bnyan?page-id=227%3A1512&node-id=233-5998&p=f
 
-## 🏗️ System Architecture
+Deployment Link	http://bnyan-env.eba-grwzrbdm.eu-central-1.elasticbeanstalk.com/
 
-<img width="3580" height="2037" alt="Emarh" src="https://github.com/user-attachments/assets/ff17bb14-ed07-4ca9-8740-aa82d5d04a5c" />
+🔐 Roles in the System
 
-<img width="780" height="1660" alt="Emarh Use Case" src="https://github.com/user-attachments/assets/2d46842a-1f2a-4a86-b7a5-f6b81fc3697d" />
+👤 USER (customer)
 
-## 🛠️ Technologies Used
+🛠️ SPECIALIST
 
-### **Backend Stack**
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Java** | 17 | Primary programming language |
-| **Spring Boot** | 2.7.0 | Application framework |
-| **Spring Security** | 5.7.0 | Authentication & authorization |
-| **Spring Data JPA** | 2.7.0 | Database operations |
-| **Spring Web** | 5.3.20 | REST API development |
-| **Spring Cloud** | 2021.0.3 | Microservices architecture |
+🧑‍💼 PROJECT_MANAGER
 
-### **Database & Storage**
-| Technology | Purpose |
-|------------|---------|
-| **MySQL 8.0** | Primary relational database |
-| **Redis** | Caching and session management |
-| **Amazon S3** | Document and file storage |
-| **Hibernate** | ORM framework |
+🛡️ ADMIN
 
-### **Build & Deployment**
-| Technology | Purpose |
-|------------|---------|
-| **Maven** | Dependency management |
-| **Docker** | Containerization |
-| **Docker Compose** | Multi-container orchestration |
-| **AWS EC2** | Cloud deployment |
-| **AWS RDS** | Managed database service |
+Rand models:
+Specialist
+SpesialistRequest
+Domain
+Project
+ProjectManager
 
-### **Development Tools**
-| Tool | Purpose |
-|------|---------|
-| **Postman** | API testing and documentation |
-| **Git/GitHub** | Version control |
-| **Swagger/OpenAPI** | API documentation |
-| **JUnit 5** | Unit testing |
-| **Zoom** | Zoom API |
-| **Moyasser** | Moyasser API |
-| **Stability** | Stability API |
-| **n8n** | n8n |
-| **Mockito** | Mocking framework |
+📊 API Endpoints Summary
 
-## 🔧 Installation & Setup
-
-### **Prerequisites**
-- Java JDK 17 or higher
-- MySQL 8.0+
-- Maven 3.8+
-- Git
-- Docker (optional)
-
-📊 API Documentation
-Access our complete API documentation at:
-Postman API Documentation: https://documenter.getpostman.com/view/50792493/2sBXVbJZNj
-
-📋 Available Endpoints
-
-👥 User Management (/api/v1/users)
-Method	Endpoint	Description	Authentication
-POST	/users/register	Register new user	Public
-POST	/users/login	User authentication	Public
-GET	/users/profile	Get user profile	Required
-PUT	/users/profile	Update user profile	Required
-GET	/users/{id}	Get user by ID	Admin only
-GET	/users	List all users	Admin only
-DELETE	/users/{id}	Delete user	Admin only
-
-🏢 Project Management (/api/v1/projects)
-Method	Endpoint	Description	Role Required
-POST	/projects	Create new project	Customer
-GET	/projects	List all projects	All roles
-GET	/projects/{id}	Get project details	Related users
-PUT	/projects/{id}	Update project	Project Manager
-POST	/projects/{id}/tasks	Add task	Project Manager
-GET	/projects/{id}/progress	Get progress	Related users
-POST	/projects/{id}/documents	Upload document	Team members
-🛠️ Specialist Management (/api/v1/specialists)
-Method	Endpoint	Description	Role Required
-POST	/specialists/register	Specialist registration	Public
-GET	/specialists	List all specialists	Customer/PM
-GET	/specialists/{id}	Get specialist details	All roles
-PUT	/specialists/{id}/verify	Verify specialist	Admin
-POST	/specialists/{id}/availability	Set availability	Specialist
-GET	/specialists/search	Search specialists	Customer/PM
-
-📅 Meeting Management (/api/v1/meetings)
-Method	Endpoint	Description	Role Required
-POST	/meetings/schedule	Schedule meeting	All roles
-GET	/meetings/upcoming	Get upcoming meetings	User
-GET	/meetings/{id}	Get meeting details	Participants
-PUT	/meetings/{id}	Update meeting	Organizer
-POST	/meetings/{id}/join	Join meeting	Invited users
-POST	/meetings/{id}/minutes	Add minutes	Organizer
-
-💰 Payment Management (/api/v1/payments)
-Method	Endpoint	Description	Role Required
-POST	/payments/initiate	Initiate payment	Customer
-GET	/payments/{id}	Get payment status	Related users
-POST	/payments/webhook	Payment webhook	System
-GET	/payments/invoice/{id}	Generate invoice	Related users
-GET	/payments/history	Payment history	User
-
-🎨 UI/UX Design
-🎯 Interactive Prototype
-Explore our fully interactive Figma prototype:
-Figma Design Prototype: https://www.figma.com/proto/0mdh83LYYxN3GfbdImGXXi/Bnyan?page-id=227%3A1512&node-id=233-5998&p=f&viewport=-203%2C-139%2C0.27&t=D2TEDoYkfYv5IW3E-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=233%3A5998
-
-✨ Design Features
-🎨 Modern & Clean Interface - Intuitive user experience
-
-📱 Fully Responsive Design - Works on all devices
-
-🎯 User-Centric Workflows - Optimized for construction industry
-
-♿ Accessibility Compliant - WCAG 2.1 standards
-
-🌓 Dark/Light Mode - User preference toggle
-
-⚡ Fast Loading - Optimized performance
-
-📱 Screens Overview
-Dashboard - Project overview and analytics
-
-Project Management - Detailed project tracking
-
-Task Board - Kanban-style task management
-
-Meeting Scheduler - Calendar integration
-
-Document Library - File management system
-
-Financial Dashboard - Budget and payment tracking
-Access our complete API documentation at:
-Postman API Documentation: https://documenter.getpostman.com/view/50792493/2sBXVbJZNj
-
-👥 Team & Contributions
-🌟 Development Team
-Team Member	Role	Responsibilities	Key Contributions
-👑 Mohammed Alrashedi
-@Mohammed1Salem	Lead Backend Developer	
-🔹 User Management
-🔹 Customer Module
-🔹 User Request System
-🔹 Meeting Management
-🔹 Core Models Architecture	
-🔹 Built Houses
-🔹 User Requests
-🔹 n8n full development and integration
-🔹 7 Email sending webhook
-🔹 n8n Zoom webook
+| Method | Path                                                  | Access                  | Description                         | Owner |
+| ------ | ----------------------------------------------------- | ----------------------- | ----------------------------------- | ----- |
+| POST   | /api/v1/specialist/register                           | Public                  | Register specialist                 | Rand  |
+| DELETE | /api/v1/specialist/delete/{id}                        | ADMIN                   | Delete specialist                   | Rand  |
+| PUT    | /api/v1/specialist/update/{id}                        | SPECIALIST              | Update specialist                   | Rand  |
+| GET    | /api/v1/specialist/get/arch-eng                       | USER, SPECIALIST, ADMIN | Get architects                      | Rand  |
+| GET    | /api/v1/specialist/get/civil-eng                      | USER, SPECIALIST, ADMIN | Get civil engineers                 | Rand  |
+| GET    | /api/v1/specialist/get/designer                       | USER, SPECIALIST, ADMIN | Get designers                       | Rand  |
+| GET    | /api/v1/specialist/get/elect-eng                      | USER, SPECIALIST, ADMIN | Get electrical engineers            | Rand  |
+| GET    | /api/v1/specialist/get/gen-cont                       | USER, SPECIALIST, ADMIN | Get general contractors             | Rand  |
+| GET    | /api/v1/specialist/get/project-manager                | USER, SPECIALIST, ADMIN | Get project managers                | Rand  |
+| GET    | /api/v1/domain/get                                    | ADMIN                   | Get all domains                     | Rand  |
+| GET    | /api/v1/domain/get-specialist                         | ADMIN                   | Get specialist domain               | Rand  |
+| POST   | /api/v1/domain/add                                    | ADMIN                   | Add domain                          | Rand  |
+| PUT    | /api/v1/domain/update/{id}                            | ADMIN                   | Update domain                       | Rand  |
+| DELETE | /api/v1/domain/delete/{id}                            | ADMIN                   | Delete domain                       | Rand  |
+| POST   | /api/v1/specialist/assign-domain/{id}                 | SPECIALIST              | Assign domain to a specialist       | Rand  |
+| GET    | /api/v1/project/get                                   | ADMIN                   | Get all projects                    | Rand  |
+| GET    | /api/v1/project/get-my-projects                       | USER                    | Get my projects                     | Rand  |
+| POST   | /api/v1/project/add/{request_id}                      | USER                    | Add project                         | Rand  |
+| GET    | /api/v1/project/budget/{project_id}                   | USER                    | AI budget prediction                | Rand  |
+| GET    | /api/v1/project/time-prediction/{project_id}          | USER                    | AI time estimation                  | Rand  |
+| POST   | /api/v1/project/generate-image/{project_id}           | USER                    | AI image generation                 | Rand  |
+| PUT    | /api/v1/project/update/{project_id}                   | USER                    | Update project                      | Rand  |
+| DELETE | /api/v1/project/delete/{project_id}                   | USER                    | Delete project                      | Rand  |
+| GET    | /api/v1/project/working-on-project/{project_id}       | USER, ADMIN             | See working team                    | Rand  |
+| POST   | /api/v1/build-request/add                             | USER                    | Add build request                   | Rand  |
+| PUT    | /api/v1/build-request/approve/{id}                    | SPECIALIST, ADMIN       | Approve build request               | Rand  |
+| PUT    | /api/v1/build-request/reject/{id}                     | SPECIALIST, ADMIN       | Reject build request                | Rand  |
+| GET    | /api/v1/build-request/get                             | USER, ADMIN             | Get build requests                  | Rand  |
 
 
+| HTTP Method | Full Path                                        | Access            | Description                       |
+| ----------- | ------------------------------------------------ | ----------------- | --------------------------------- |
+| GET         | `/api/v1/customer/get`                           | ADMIN             | Get all customers                 |
+| POST        | `/api/v1/customer/register-customer`             | PUBLIC            | Register new customer             |
+| GET         | `/api/v1/customer/get-by-id`                     | CUSTOMER          | Get logged-in customer profile    |
+| POST        | `/api/v1/customer/ask-ai`                        | CUSTOMER          | Ask AI a question                 |
+| GET         | `/api/v1/customer/get-properties`                | CUSTOMER          | Get customer properties           |
+| GET         | `/api/v1/customer/on-going-projects`             | CUSTOMER          | Get customer ongoing projects     |
+| GET         | `/api/v1/customer/completed-projects`            | CUSTOMER          | Get customer completed projects   |
+| GET         | `/api/v1/specialist/get`                         | ADMIN             | Get all specialists               |
+| POST        | `/api/v1/specialist/register`                    | PUBLIC            | Register specialist               |
+| POST        | `/api/v1/specialist/assign-domain/{domain_id}`   | SPECIALIST        | Assign domain to specialist       |
+| PUT         | `/api/v1/specialist/accept-request/{request_id}` | SPECIALIST        | Accept customer request           |
+| PUT         | `/api/v1/specialist/reject-request/{request_id}` | SPECIALIST        | Reject customer request           |
+| PUT         | `/api/v1/specialist/update/{spec_id}`            | ADMIN, SPECIALIST | Update specialist                 |
+| DELETE      | `/api/v1/specialist/delete/{specialist_id}`      | ADMIN             | Delete specialist                 |
+| GET         | `/api/v1/specialist/get/arch-eng`                | ALL USERS         | Get architectural engineers       |
+| GET         | `/api/v1/specialist/get/civil-eng`               | ALL USERS         | Get civil engineers               |
+| GET         | `/api/v1/specialist/get/designer`                | ALL USERS         | Get designers                     |
+| GET         | `/api/v1/specialist/get/elect-eng`               | ALL USERS         | Get electrical engineers          |
+| GET         | `/api/v1/specialist/get/gen-cont`                | ALL USERS         | Get general contractors           |
+| GET         | `/api/v1/specialist/get/mech-eng`                | ALL USERS         | Get mechanical engineers          |
+| GET         | `/api/v1/specialist/get/project-manager`         | ALL USERS         | Get project managers              |
+| GET         | `/api/v1/specialist/requests`                    | SPECIALIST        | Get logged-in specialist requests |
+| GET         | `/api/v1/specialist-request/get`                                   | ADMIN             | Get all specialist requests             |
+| POST        | `/api/v1/specialist-request/add/{project_id}/{spec_id}`            | CUSTOMER          | Add specialist request                  |
+| PUT         | `/api/v1/specialist-request/accept/{requestId}`                    | SPECIALIST        | Accept specialist request               |
+| PUT         | `/api/v1/specialist-request/add-manager/{project_id}/{manager_id}` | CUSTOMER          | Add manager request                     |
+| PUT         | `/api/v1/specialist-request/reject/{requestId}`                    | SPECIALIST        | Reject specialist request               |
+| PUT         | `/api/v1/specialist-request/update/{requestId}`                    | CUSTOMER          | Update specialist request               |
+| DELETE      | `/api/v1/specialist-request/delete/{requestId}`                    | CUSTOMER          | Delete specialist request               |
 
-
+I contributed to the project by developing multiple AI-driven features, including conversational chat with AI, image generation, and predictive modules for estimating project budget and timeline. In addition to AI functionality, I worked extensively on designing and implementing complex entity relationships within the system. I also assisted in revising and improving the business logic of several endpoints originally implemented by teammates. Furthermore, I automated several system processes, such as status updates based on dates and automatic rejection of unanswered requests after seven days, implemented through a scheduler that runs periodic checks every minute.
 
