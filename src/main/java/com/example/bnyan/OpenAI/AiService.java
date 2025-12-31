@@ -1,10 +1,7 @@
 package com.example.bnyan.OpenAI;
 
 
-import com.example.bnyan.DTO.PredictionBudgetDTO;
-import com.example.bnyan.DTO.PredictionTimeDTO;
-import com.example.bnyan.DTO.ProjectAIDTO;
-import com.example.bnyan.DTO.QuestionDTO;
+import com.example.bnyan.DTO.*;
 import com.example.bnyan.Stability.PromptBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
@@ -75,5 +72,10 @@ public class AiService {
         return aiResponseParser.generatedTimeOpenAi(response);
     }
 
+    public SpecialistRequestAutoFillDTO autoFillSpecialistRequest(ProjectAIDTO aiDTO, String specialistType) {
+        String prompt = promptBuilder.autoFillSpecialistRequest(aiDTO, specialistType);
+        String response = useAI(prompt);
+        return aiResponseParser.generatedAutoFillOpenAi(response);
+    }
 
 }

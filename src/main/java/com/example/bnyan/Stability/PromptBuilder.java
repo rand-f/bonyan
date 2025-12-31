@@ -83,4 +83,33 @@ public class PromptBuilder {
                 aiDTO.getStartDate()
         );
     }
+
+    public String autoFillSpecialistRequest(ProjectAIDTO aiDTO, String specialistType) {
+        return """
+        You are a specialist working in construction projects. 
+        A customer wants to request a specialist for their construction project.
+        Based on the project information provided, generate a professional specialist request description and suggest an appropriate offer price.
+        
+        Project Description: %s
+        Project Budget: %s
+        Project Location: %s
+        Land Size: %s
+        Specialist Type: %s
+        
+        Requirements:
+        - Return ONLY valid JSON. 
+        - JSON format:  {"description":"... ","offeredPrice":...}
+        - The description must be in Arabic (professional and clear).
+        - The description should explain what work the specialist needs to do based on the project.
+        - The offered price should be reasonable based on the project budget and specialist type.
+        - The offered price should be between 5%% to 15%% of the project budget depending on specialist type.
+        - offeredPrice must be a number (double).
+        """.formatted(
+                aiDTO.getDescription(),
+                aiDTO.getBudget(),
+                aiDTO.getLocation(),
+                aiDTO.getLandSize(),
+                specialistType
+        );
+    }
 }

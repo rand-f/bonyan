@@ -20,4 +20,6 @@ public interface BuildRequestRepository extends JpaRepository<BuildRequest, Inte
 
     List<BuildRequest> getBuildRequestsByLandId(Integer landId);
 
+    BuildRequest getBuildRequestByProjectId(Integer projectId);
+
 }

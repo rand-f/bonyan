@@ -4,6 +4,7 @@ import com.example.bnyan.Api.ApiException;
 import com.example.bnyan.DTO.PredictionBudgetDTO;
 import com.example.bnyan.DTO.PredictionTimeDTO;
 import com.example.bnyan.DTO.QuestionDTO;
+import com.example.bnyan.DTO.SpecialistRequestAutoFillDTO;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -171,4 +172,56 @@ public class AIResponseParser {
         }
     }
 
+    public SpecialistRequestAutoFillDTO generatedAutoFillOpenAi(String response) {
+
+        SpecialistRequestAutoFillDTO autoFill = new SpecialistRequestAutoFillDTO();
+
+        try {
+            JsonNode root = mapper. readTree(response);
+            JsonNode jsonContent;
+
+            if (root.has("output")) {
+                JsonNode output = root.get("output");
+
+                String text = output.get(0)
+                        .get("content")
+                        .get(0)
+                        .get("text")
+                        .asText();
+
+                String clean = text
+                        .replace("```json", "")
+                        .replace("```", "")
+                        .trim();
+
+                jsonContent = mapper.readTree(clean);
+            }
+
+            else if (root.has("choices")) {
+                String text = root. get("choices")
+                        . get(0)
+                        . get("message")
+                        . get("content")
+                        . asText();
+
+                jsonContent = mapper.readTree(text);
+            }
+
+            else if (root.isObject()) {
+                jsonContent = root;
+            }
+
+            else {
+                throw new ApiException("AI response format not recognized");
+            }
+
+            autoFill.setDescription(jsonContent.has("description") ? jsonContent.get("description").asText() : null);
+            autoFill.setOfferedPrice(jsonContent.has("offeredPrice") ? jsonContent.get("offeredPrice").asDouble() : null);
+
+            return autoFill;
+
+        } catch (Exception e) {
+            throw new ApiException("Error parsing AI response: " + e. getMessage());
+        }
+    }
 }

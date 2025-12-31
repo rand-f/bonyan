@@ -1,6 +1,7 @@
 package com.example.bnyan.Controller;
 
 import com.example.bnyan.Api.ApiResponse;
+import com.example.bnyan.DTO.SpecialistRequestAutoFillDTO;
 import com.example.bnyan.Model.SpecialistRequest;
 import com.example.bnyan.Model.User;
 import com.example.bnyan.Service.SpecialistRequestService;
@@ -69,5 +70,12 @@ public class SpecialistRequestController {
     public ResponseEntity<?> deleteRequest(@AuthenticationPrincipal User user, @PathVariable Integer requestId) {
         specialistRequestService.deleteRequest(user.getId(), requestId);
         return ResponseEntity.status(200).body(new ApiResponse("Specialist request deleted"));
+    }
+
+    //customer
+    @PostMapping("/auto-fill/{project_id}")
+    public ResponseEntity<? > autoFillSpecialistRequest(@AuthenticationPrincipal User user, @PathVariable Integer project_id, @RequestParam String specialistType) {
+        SpecialistRequestAutoFillDTO autoFill = specialistRequestService.autoFillRequest(user.getId(), project_id, specialistType);
+        return ResponseEntity.status(200).body(autoFill);
     }
 }

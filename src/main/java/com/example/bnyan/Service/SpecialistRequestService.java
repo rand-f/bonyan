@@ -1,7 +1,10 @@
 package com.example.bnyan.Service;
 
 import com.example.bnyan.Api.ApiException;
+import com.example.bnyan.DTO.ProjectAIDTO;
+import com.example.bnyan.DTO.SpecialistRequestAutoFillDTO;
 import com.example.bnyan.Model.*;
+import com.example.bnyan.OpenAI.AiService;
 import com.example.bnyan.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,8 @@ public class SpecialistRequestService {
     private final ProjectManagerRepository projectManagerRepository;
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
+    private final AiService aiService;
+    private final BuildRequestRepository buildRequestRepository;
 
     public List<SpecialistRequest> getAll() {
         return requestRepository.findAll();
@@ -299,4 +304,44 @@ public class SpecialistRequestService {
             System.out.println("Failed to send webhook: " + e.getMessage());
         }
     }
+
+    public SpecialistRequestAutoFillDTO autoFillRequest(Integer user_id, Integer project_id, String specialistType) {
+        User user = userRepository.getUserById(user_id);
+        if (user == null) {
+            throw new ApiException("user not found");
+        }
+
+        Customer customer = customerRepository.getCustomerById(user_id);
+        if (customer == null) {
+            throw new ApiException("only customer can make this process");
+        }
+
+        Project project = projectRepository.findProjectById(project_id);
+        if (project == null) {
+            throw new ApiException("project not found");
+        }
+
+        if (project.getCustomer().getId() != customer.getId()) {
+            throw new ApiException("unauthorized access");
+        }
+
+        // Get location and land size from BuildRequest
+        BuildRequest buildRequest = buildRequestRepository.getBuildRequestByProjectId(project_id);
+        String location = "غير محدد";
+        String landSize = "غير محدد";
+
+        if (buildRequest != null && buildRequest. getLand() != null) {
+            location = buildRequest.getLand().getLocation();
+            landSize = buildRequest.getLand().getSize();
+        }
+
+        ProjectAIDTO aiDTO = new ProjectAIDTO();
+        aiDTO.setDescription(project.getDescription());
+        aiDTO.setBudget(project.getBudget());
+        aiDTO.setLocation(location);
+        aiDTO.setLandSize(landSize);
+
+        return aiService.autoFillSpecialistRequest(aiDTO, specialistType);
+    }
+
 }
