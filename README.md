@@ -218,7 +218,7 @@ GET	/payments/history	Payment history	User
 🎨 UI/UX Design
 🎯 Interactive Prototype
 Explore our fully interactive Figma prototype:
-Figma Design Prototype: https://www.figma.com/proto/0mdh83LYYxN3GfbdImGXXi/Bnyan?t=OUVACBltwFDPfEXv-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&node-id=12-1234&starting-point-node-id=12%3A1234&show-proto-sidebar=1
+Figma Design Prototype: https://www.figma.com/proto/0mdh83LYYxN3GfbdImGXXi/Bnyan?page-id=227%3A1512&node-id=233-5998&p=f&viewport=-203%2C-139%2C0.27&t=D2TEDoYkfYv5IW3E-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=233%3A5998
 
 ✨ Design Features
 🎨 Modern & Clean Interface - Intuitive user experience
