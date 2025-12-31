@@ -252,17 +252,19 @@ Postman API Documentation: https://documenter.getpostman.com/view/50792493/2sBXV
 🌟 Development Team
 Team Member	Role	Responsibilities	Key Contributions
 👑 Mohammed Alrashedi
-@Mohammed1Salem	Lead Backend Developer	🔹 User Management
+@Mohammed1Salem	Lead Backend Developer	
+🔹 User Management
 🔹 Customer Module
 🔹 User Request System
 🔹 Meeting Management
 🔹 Core Models Architecture	
-✅ Built complete user authentication & authorization system
-✅ Implemented customer profile management with document verification
-✅ Developed meeting scheduling with calendar integration
-✅ Designed and implemented all core domain models
-✅ Set up Spring Security configuration with JWT
-✅ Created user request workflow management
+🔹 Built Houses
+🔹 User Requests
+🔹 n8n full development and integration
+🔹 7 Email sending webhook
+🔹 n8n Zoom webook
+
+
 
 
 
