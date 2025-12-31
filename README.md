@@ -264,32 +264,5 @@ Team Member	Role	Responsibilities	Key Contributions
 ✅ Set up Spring Security configuration with JWT
 ✅ Created user request workflow management
 
-🌟 Rand Abalkhail
-@randabalkhail	Backend Developer	🔹 Project Management
-🔹 Domain Logic
-🔹 Specialist Module
-🔹 Specialist Request System
-✅ Developed end-to-end project lifecycle management
-✅ Implemented intelligent specialist matching algorithm
-✅ Created domain-specific business logic and validation
-✅ Built specialist request/approval workflow system
-✅ Integrated third-party APIs for specialist verification
-✅ Designed project status tracking and reporting
-
-💼 Asrar Fallatah
-@asrarfallatah	Backend Developer	🔹 Project Manager Module
-🔹 Task Management
-🔹 Review System
-🔹 Build Requests
-🔹 Land Management
-🔹 Payment Integration	
-✅ Implemented comprehensive task assignment and tracking system
-✅ Built review and rating system with analytics
-✅ Developed secure payment gateway integration
-✅ Created land/property management module
-✅ Implemented build request processing workflow
-✅ Set up financial transaction logging and auditing
-
-
 
 
