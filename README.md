@@ -132,5 +132,9 @@ ProjectManager
 | PUT         | `/api/v1/specialist-request/update/{requestId}`                    | CUSTOMER          | Update specialist request               |
 | DELETE      | `/api/v1/specialist-request/delete/{requestId}`                    | CUSTOMER          | Delete specialist request               |
 
+
+
 I contributed to the project by developing multiple AI-driven features, including conversational chat with AI, image generation, and predictive modules for estimating project budget and timeline. In addition to AI functionality, I worked extensively on designing and implementing complex entity relationships within the system. I also assisted in revising and improving the business logic of several endpoints originally implemented by teammates. Furthermore, I automated several system processes, such as status updates based on dates and automatic rejection of unanswered requests after seven days, implemented through a scheduler that runs periodic checks every minute.
 
+I also helped in the system's UI, in the project creation pages.
+I was responsible for the deployment of the system on AWS.
